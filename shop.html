@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shop — BITEZ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-bright": "#fafaf5","surface-container-low": "#f4f4ef","surface-container-lowest": "#ffffff","on-surface": "#1a1c19","secondary": "#6f5a52","on-surface-variant": "#504442","surface-tint": "#755750","surface-dim": "#dadad5","inverse-surface": "#2f312e","on-error-container": "#93000a","tertiary-fixed-dim": "#cfc4c0","on-secondary-fixed-variant": "#56423b","on-secondary-fixed": "#271812","outline-variant": "#d4c3bf","on-secondary": "#ffffff","on-tertiary-fixed": "#201a18","on-tertiary-fixed-variant": "#4c4542","on-secondary-container": "#766057","secondary-fixed": "#fadcd2","on-error": "#ffffff","on-primary-fixed-variant": "#5c403a","on-tertiary-container": "#aca29f","background": "#fafaf5","primary-fixed-dim": "#e5beb5","on-primary-container": "#c19c94","outline": "#827471","on-tertiary": "#ffffff","on-primary": "#ffffff","primary": "#361f1a","error": "#ba1a1a","surface-container-highest": "#e3e3de","inverse-on-surface": "#f1f1ec","on-primary-fixed": "#2b1611","secondary-container": "#fadcd2","surface": "#fafaf5","surface-variant": "#e3e3de","error-container": "#ffdad6","on-background": "#1a1c19","inverse-primary": "#e5beb5","surface-container-high": "#e8e8e3","surface-container": "#eeeee9","primary-fixed": "#ffdad2","tertiary": "#292421","secondary-fixed-dim": "#ddc1b7","tertiary-fixed": "#ece0dc","primary-container": "#4e342e","tertiary-container": "#403936"
+        },
+        fontFamily: { "headline": ["Noto Serif"], "body": ["Plus Jakarta Sans"], "label": ["Plus Jakarta Sans"] },
+        borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  #cart-drawer { transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+  #cart-drawer.open { transform: translateX(0); }
+  #cart-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  #cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  #mobile-menu { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); }
+  #mobile-menu.open { max-height: 300px; }
+
+  nav.scrolled { box-shadow: 0 4px 24px rgba(54,31,26,0.10); }
+
+  #toast { transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  .cat-tab { transition: background 0.2s, color 0.2s, transform 0.15s; }
+  .cat-tab.active { background: #361f1a; color: white; transform: scale(1.03); }
+
+  .product-card { opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .product-card.visible { opacity: 1; transform: translateY(0); }
+  .product-card.hidden-card { display: none; }
+
+  .shop-hero-bg { background: linear-gradient(135deg, #fafaf5 0%, #f4f4ef 60%, #fadcd2 100%); }
+
+  .badge-new { background: #ece0dc; color: #4c4542; }
+  .badge-bestseller { background: #fadcd2; color: #56423b; }
+  .badge-seasonal { background: #e8e8e3; color: #504442; }
+  .badge-limited { background: #4e342e; color: #ffdad2; }
+  .badge-unavailable { background: #ffdad6; color: #93000a; }
+
+  #sort-dropdown { transition: opacity 0.2s, transform 0.2s; transform-origin: top right; }
+  #sort-dropdown.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+  #sort-dropdown:not(.hidden) { opacity: 1; transform: scale(1); }
+
+  .product-card .card-img-wrap { overflow: hidden; }
+  .product-card .card-img-wrap img { transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); }
+  .product-card:hover .card-img-wrap img { transform: scale(1.07); }
+  .product-card.out-of-stock .card-img-wrap img { filter: grayscale(60%); }
+  .product-card.out-of-stock { opacity: 0.75; }
+
+  #result-count { transition: opacity 0.3s; }
+  .cake-price-block { display: flex; flex-direction: column; gap: 1px; }
+
+  /* CAKE PICKER */
+  #cake-picker-overlay {
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    background: rgba(26,12,10,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  #cake-picker-overlay.open { opacity: 1; pointer-events: all; }
+  #cake-picker-modal {
+    transform: translateY(28px) scale(0.96); opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.34,1.4,0.64,1), opacity 0.25s ease;
+  }
+  #cake-picker-overlay.open #cake-picker-modal { transform: translateY(0) scale(1); opacity: 1; }
+
+  .cake-option {
+    cursor: pointer; border: 2px solid #d4c3bf; border-radius: 1rem;
+    transition: border-color 0.18s, background 0.18s, transform 0.15s, box-shadow 0.15s;
+  }
+  .cake-option:hover { border-color: #755750; background: #fdf7f5; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(54,31,26,0.10); }
+  .cake-option.selected { border-color: #361f1a; background: #fff3ef; box-shadow: 0 2px 12px rgba(54,31,26,0.13); }
+  .cake-option.selected .option-check { opacity: 1; transform: scale(1); }
+  .option-check { opacity: 0; transform: scale(0.4); transition: opacity 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* CART STEPS */
+  .cart-step { display: none; }
+  .cart-step.active { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+  .step-indicator { transition: all 0.3s; }
+  .step-indicator.done { background: #361f1a; color: white; }
+  .step-indicator.current { background: #fadcd2; color: #361f1a; border: 2px solid #361f1a; }
+  .step-indicator.pending { background: #eeeee9; color: #827471; }
+
+  .fulfillment-card {
+    cursor: pointer; border: 2px solid #d4c3bf; border-radius: 1rem;
+    transition: border-color 0.18s, background 0.18s, transform 0.15s, box-shadow 0.15s;
+  }
+  .fulfillment-card:hover { border-color: #755750; background: #fdf7f5; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(54,31,26,0.10); }
+  .fulfillment-card.selected { border-color: #361f1a; background: #fff3ef; box-shadow: 0 2px 12px rgba(54,31,26,0.13); }
+  .fulfillment-card .fcard-check { opacity: 0; transform: scale(0.4); transition: opacity 0.18s, transform 0.18s cubic-bezier(0.34,1.56,0.64,1); }
+  .fulfillment-card.selected .fcard-check { opacity: 1; transform: scale(1); }
+
+  .cart-input {
+    width: 100%; padding: 10px 14px; border: 1.5px solid #d4c3bf; border-radius: 0.75rem;
+    background: #fafaf5; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
+    color: #1a1c19; outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .cart-input:focus { border-color: #361f1a; box-shadow: 0 0 0 3px rgba(54,31,26,0.08); }
+  .cart-input::placeholder { color: #b5a5a2; }
+  .cart-input.error { border-color: #ba1a1a; }
+
+  .cart-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #504442; margin-bottom: 5px; }
+
+  .order-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eeeee9; }
+  .order-summary-row:last-child { border-bottom: none; }
+
+  @keyframes slideInRight { from { opacity:0; transform: translateX(18px); } to { opacity:1; transform: translateX(0); } }
+  @keyframes slideInLeft  { from { opacity:0; transform: translateX(-18px); } to { opacity:1; transform: translateX(0); } }
+  .slide-in-right { animation: slideInRight 0.28s cubic-bezier(0.4,0,0.2,1) both; }
+  .slide-in-left  { animation: slideInLeft  0.28s cubic-bezier(0.4,0,0.2,1) both; }
+
+  @keyframes popIn { 0%{transform:scale(0.3);opacity:0} 70%{transform:scale(1.12)} 100%{transform:scale(1);opacity:1} }
+  .success-icon { animation: popIn 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp 0.4s ease both; }
+
+  /* SEARCH BAR */
+  #search-bar-wrap { transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
+  #search-overlay { opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+  #search-overlay.open { opacity: 1; pointer-events: all; }
+  #search-panel { transform: translateY(-12px); opacity: 0; pointer-events: none; transition: transform 0.28s cubic-bezier(0.34,1.2,0.64,1), opacity 0.22s; }
+  #search-panel.open { transform: translateY(0); opacity: 1; pointer-events: all; }
+
+  .search-result-item { transition: background 0.15s; }
+  .search-result-item:hover { background: #f4f4ef; }
+
+  /* ── SHARED PAYMENT MODAL BASE ── */
+  .pay-modal-overlay {
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    background: rgba(26,12,10,0.60); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .pay-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .pay-modal-box {
+    transform: translateY(32px) scale(0.95); opacity: 0;
+    transition: transform 0.34s cubic-bezier(0.34,1.4,0.64,1), opacity 0.25s ease;
+  }
+  .pay-modal-overlay.open .pay-modal-box { transform: translateY(0) scale(1); opacity: 1; }
+
+  /* GCASH specifics */
+  @keyframes qrPulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,123,255,0.25)} 50%{box-shadow:0 0 0 10px rgba(0,123,255,0);} }
+  .qr-pulse { animation: qrPulse 2.4s ease-in-out infinite; }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed #d4c3bf; border-radius: 1rem; transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+  .upload-zone:hover, .upload-zone.drag-over { border-color: #007bff; background: #f0f6ff; }
+  .upload-zone.has-file { border-color: #2f4b41; background: #f0fdf8; border-style: solid; }
+
+  @keyframes checkPop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }
+  .check-pop { animation: checkPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  .payment-opt {
+    cursor: pointer; border: 2px solid transparent; border-radius: 1rem;
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.15s;
+  }
+  .payment-opt.selected { border-color: #361f1a !important; background: #fff3ef; }
+
+  /* Availability badge on card */
+  .avail-dot-green { width: 7px; height: 7px; border-radius: 50%; background: #00b274; display: inline-block; margin-right: 4px; }
+  .avail-dot-red   { width: 7px; height: 7px; border-radius: 50%; background: #ba1a1a; display: inline-block; margin-right: 4px; }
+  .avail-dot-yellow{ width: 7px; height: 7px; border-radius: 50%; background: #e8a200; display: inline-block; margin-right: 4px; }
+
+  .oos-overlay { position: absolute; inset: 0; background: rgba(250,245,245,0.55); display: flex; align-items: center; justify-content: center; z-index: 2; }
+  .oos-badge { background: #ba1a1a; color: white; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; }
+
+  .low-stock-banner { background: linear-gradient(90deg, #fff8e7, #fffbf0); border-left: 3px solid #e8a200; }
+
+  /* Maya upload zone */
+  .maya-upload-zone { border-color: #00b274; }
+  .maya-upload-zone:hover, .maya-upload-zone.drag-over { border-color: #008a5a; background: #f0fdf8; }
+  .maya-upload-zone.has-file { border-color: #008a5a; background: #f0fdf8; }
+
+  /* ShopeePay upload zone */
+  .shopee-upload-zone:hover, .shopee-upload-zone.drag-over { border-color: #ee4d2d; background: #fff5f3; }
+  .shopee-upload-zone.has-file { border-color: #ee4d2d; background: #fff5f3; }
+</style>
+</head>
+<body class="bg-surface font-body text-on-surface-variant overflow-x-hidden">
+
+<!-- Cart Overlay -->
+<div id="cart-overlay" class="fixed inset-0 bg-black/40 z-40" onclick="closeCart()"></div>
+
+<!-- Search Overlay -->
+<div id="search-overlay" class="fixed inset-0 bg-black/20 z-[35]" onclick="closeSearch()"></div>
+
+<!-- ══════════════════════════════════════════════
+     SEARCH PANEL
+══════════════════════════════════════════════ -->
+<div id="search-panel" class="fixed top-[72px] left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-[36]">
+  <div class="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden">
+    <div class="flex items-center gap-3 px-4 py-3 border-b border-outline-variant">
+      <span class="material-symbols-outlined text-secondary">search</span>
+      <input id="search-input" type="text" placeholder="Search cookies, brownies, cakes…"
+        class="flex-1 bg-transparent outline-none text-sm text-primary placeholder:text-on-surface-variant font-body"
+        oninput="onSearchInput(this.value)" onkeydown="onSearchKeydown(event)"/>
+      <button onclick="closeSearch()" class="p-1 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant text-base">close</span>
+      </button>
+    </div>
+    <div id="search-results" class="max-h-80 overflow-y-auto py-1">
+      <p class="text-xs text-on-surface-variant px-4 py-3 text-center opacity-60">Type to search all products…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     GCASH PAYMENT MODAL
+══════════════════════════════════════════════ -->
+<div id="gcash-overlay" class="pay-modal-overlay fixed inset-0 z-[80] flex items-end sm:items-center justify-center sm:px-4">
+  <div id="gcash-modal" class="pay-modal-box bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant" style="background:linear-gradient(135deg,#007bff08,#007bff03);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm" style="background:#007bff;">G</div>
+        <div>
+          <p class="font-bold text-primary text-sm">GCash Payment</p>
+          <p class="text-xs text-on-surface-variant">Manual transfer · Scan or copy number</p>
+        </div>
+      </div>
+      <button onclick="closeGcash()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;">close</span>
+      </button>
+    </div>
+    <div class="p-5 space-y-4 overflow-y-auto max-h-[80vh]">
+      <div class="flex items-center justify-center gap-2 text-xs font-semibold">
+        <div id="gcash-pill-1" class="flex items-center gap-1.5 px-3 py-1 rounded-full" style="background:#e8f0ff;color:#007bff;">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[10px]" style="background:#007bff;">1</span>Send Payment
+        </div>
+        <div class="w-6 h-px bg-outline-variant"></div>
+        <div id="gcash-pill-2" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[10px] bg-outline-variant text-on-surface-variant">2</span>Upload Proof
+        </div>
+      </div>
+      <div id="gcash-step-1">
+        <div class="bg-surface-container rounded-xl px-4 py-3 flex items-center justify-between mb-4">
+          <span class="text-sm text-on-surface-variant font-medium">Amount to Pay</span>
+          <span id="gcash-amount" class="font-black text-primary text-xl"></span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="qr-pulse w-44 h-44 rounded-2xl border-4 border-white overflow-hidden shadow-lg mb-3" style="background:#f8f9fa;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=176x176&data=09123456789&bgcolor=ffffff&color=007bff&margin=10" alt="GCash QR Code" class="w-full h-full object-cover"/>
+          </div>
+          <p class="text-xs text-on-surface-variant font-medium mb-1">or send to this number</p>
+          <div class="flex items-center gap-2 bg-surface-container rounded-xl px-5 py-3">
+            <span class="font-black text-primary text-lg tracking-widest">0912-345-6789</span>
+            <button onclick="copyGcashNumber()" id="copy-btn" class="p-1.5 rounded-full hover:bg-surface-container-high transition-colors" title="Copy number">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;" id="copy-icon">content_copy</span>
+            </button>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 opacity-70">Account Name: <span class="font-bold text-primary">BITEZ Artisanal</span></p>
+        </div>
+        <div class="bg-surface-container rounded-xl p-4 space-y-2 mt-1">
+          <p class="text-xs font-bold text-primary uppercase tracking-wide">How to pay via GCash</p>
+          <div class="space-y-1.5">
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#007bff;">1</span>Open GCash app → tap <strong class="text-primary">Send Money</strong></div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#007bff;">2</span>Enter the number or scan the QR above</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#007bff;">3</span>Send exactly <strong id="gcash-amount-inline" class="text-primary"></strong> and take a screenshot</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#007bff;">4</span>Click <strong class="text-primary">I've Paid</strong> below and upload your screenshot</div>
+          </div>
+        </div>
+        <button onclick="showGcashStep2()" class="w-full py-3.5 rounded-full font-bold text-sm text-white mt-2 hover:scale-[1.02] transition-transform shadow-lg" style="background:#007bff;">
+          ✅ I've Paid — Upload Proof
+        </button>
+      </div>
+      <div id="gcash-step-2" class="hidden space-y-4">
+        <div class="text-center">
+          <p class="font-bold text-primary text-sm mb-1">Upload your GCash screenshot</p>
+          <p class="text-xs text-on-surface-variant">We'll verify your payment before confirming your order.</p>
+        </div>
+        <label for="gcash-file-input" class="upload-zone block p-6 text-center" id="upload-zone" ondragover="onDragOver(event,'upload-zone')" ondragleave="onDragLeave(event,'upload-zone')" ondrop="onFileDrop(event,'gcash')">
+          <div id="upload-placeholder">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40 mb-2 block" style="font-variation-settings:'FILL' 1;">upload_file</span>
+            <p class="text-sm font-semibold text-primary">Tap to upload screenshot</p>
+            <p class="text-xs text-on-surface-variant mt-1">or drag and drop here</p>
+            <p class="text-xs text-on-surface-variant opacity-60 mt-1">JPG, PNG, GIF — max 10MB</p>
+          </div>
+          <div id="upload-preview" class="hidden flex-col items-center gap-2">
+            <img id="proof-preview-img" src="" alt="Proof" class="max-h-36 rounded-xl object-contain shadow-md"/>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#00b274] check-pop" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+              <p class="text-xs font-bold text-[#00b274]" id="upload-filename">Screenshot uploaded</p>
+            </div>
+            <button type="button" onclick="clearUpload(event,'gcash')" class="text-xs text-on-surface-variant underline">Remove & re-upload</button>
+          </div>
+        </label>
+        <input type="file" id="gcash-file-input" accept="image/*" class="hidden" onchange="onFileSelected(this,'gcash')"/>
+        <div>
+          <label class="cart-label" for="gcash-ref">GCash Reference Number <span class="text-on-surface-variant font-normal normal-case">(optional but helpful)</span></label>
+          <input id="gcash-ref" class="cart-input" type="text" placeholder="e.g. 1234567890"/>
+        </div>
+        <p id="upload-error" class="hidden text-xs text-error font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">warning</span> Please upload your payment screenshot.
+        </p>
+        <button onclick="confirmGcashPayment()" class="w-full py-3.5 rounded-full font-bold text-sm text-white hover:scale-[1.02] transition-transform shadow-lg" style="background:#007bff;">
+          <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">send</span>Submit Proof & Place Order
+        </button>
+        <button onclick="backToGcashStep1()" class="w-full py-2.5 rounded-full font-semibold text-sm text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     MAYA PAYMENT MODAL
+══════════════════════════════════════════════ -->
+<div id="maya-overlay" class="pay-modal-overlay fixed inset-0 z-[80] flex items-end sm:items-center justify-center sm:px-4">
+  <div id="maya-modal" class="pay-modal-box bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant" style="background:linear-gradient(135deg,#00b27408,#00b27403);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm" style="background:linear-gradient(135deg,#00b274,#00d68f);">M</div>
+        <div>
+          <p class="font-bold text-primary text-sm">Maya Payment</p>
+          <p class="text-xs text-on-surface-variant">Send money via Maya e-wallet</p>
+        </div>
+      </div>
+      <button onclick="closeMaya()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;">close</span>
+      </button>
+    </div>
+    <div class="p-5 space-y-4 overflow-y-auto max-h-[80vh]">
+      <div class="flex items-center justify-center gap-2 text-xs font-semibold">
+        <div id="maya-pill-1" class="flex items-center gap-1.5 px-3 py-1 rounded-full" style="background:#e0faf2;color:#00874f;">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[10px]" style="background:#00b274;">1</span>Send Payment
+        </div>
+        <div class="w-6 h-px bg-outline-variant"></div>
+        <div id="maya-pill-2" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[10px] bg-outline-variant text-on-surface-variant">2</span>Upload Proof
+        </div>
+      </div>
+      <div id="maya-step-1">
+        <div class="bg-surface-container rounded-xl px-4 py-3 flex items-center justify-between mb-4">
+          <span class="text-sm text-on-surface-variant font-medium">Amount to Pay</span>
+          <span id="maya-amount" class="font-black text-primary text-xl"></span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-44 h-44 rounded-2xl border-4 border-white overflow-hidden shadow-lg mb-3" style="background:#f8f9fa;box-shadow:0 0 0 0 rgba(0,178,116,0.25);">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=176x176&data=09987654321&bgcolor=ffffff&color=00b274&margin=10" alt="Maya QR Code" class="w-full h-full object-cover"/>
+          </div>
+          <p class="text-xs text-on-surface-variant font-medium mb-1">or send to this number</p>
+          <div class="flex items-center gap-2 bg-surface-container rounded-xl px-5 py-3">
+            <span class="font-black text-primary text-lg tracking-widest">0998-765-4321</span>
+            <button onclick="copyNumber('0998-765-4321','maya-copy-icon')" class="p-1.5 rounded-full hover:bg-surface-container-high transition-colors">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;" id="maya-copy-icon">content_copy</span>
+            </button>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 opacity-70">Account Name: <span class="font-bold text-primary">BITEZ Artisanal</span></p>
+        </div>
+        <div class="bg-surface-container rounded-xl p-4 space-y-2 mt-1">
+          <p class="text-xs font-bold text-primary uppercase tracking-wide">How to pay via Maya</p>
+          <div class="space-y-1.5">
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#00b274;">1</span>Open Maya app → tap <strong class="text-primary">Send Money</strong></div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#00b274;">2</span>Enter the number or scan the QR above</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#00b274;">3</span>Send exactly <strong id="maya-amount-inline" class="text-primary"></strong> and screenshot the confirmation</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#00b274;">4</span>Tap <strong class="text-primary">I've Paid</strong> and upload your screenshot</div>
+          </div>
+        </div>
+        <button onclick="showMayaStep2()" class="w-full py-3.5 rounded-full font-bold text-sm text-white mt-2 hover:scale-[1.02] transition-transform shadow-lg" style="background:#00b274;">
+          ✅ I've Paid — Upload Proof
+        </button>
+      </div>
+      <div id="maya-step-2" class="hidden space-y-4">
+        <div class="text-center">
+          <p class="font-bold text-primary text-sm mb-1">Upload your Maya screenshot</p>
+          <p class="text-xs text-on-surface-variant">We'll verify your payment before confirming your order.</p>
+        </div>
+        <label for="maya-file-input" class="upload-zone maya-upload-zone block p-6 text-center" id="maya-upload-zone" ondragover="onDragOver(event,'maya-upload-zone')" ondragleave="onDragLeave(event,'maya-upload-zone')" ondrop="onFileDrop(event,'maya')">
+          <div id="maya-upload-placeholder">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40 mb-2 block" style="font-variation-settings:'FILL' 1;">upload_file</span>
+            <p class="text-sm font-semibold text-primary">Tap to upload screenshot</p>
+            <p class="text-xs text-on-surface-variant mt-1">or drag and drop here</p>
+            <p class="text-xs text-on-surface-variant opacity-60 mt-1">JPG, PNG, GIF — max 10MB</p>
+          </div>
+          <div id="maya-upload-preview" class="hidden flex-col items-center gap-2">
+            <img id="maya-proof-preview-img" src="" alt="Proof" class="max-h-36 rounded-xl object-contain shadow-md"/>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#00b274] check-pop" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+              <p class="text-xs font-bold text-[#00b274]" id="maya-upload-filename">Screenshot uploaded</p>
+            </div>
+            <button type="button" onclick="clearUpload(event,'maya')" class="text-xs text-on-surface-variant underline">Remove & re-upload</button>
+          </div>
+        </label>
+        <input type="file" id="maya-file-input" accept="image/*" class="hidden" onchange="onFileSelected(this,'maya')"/>
+        <div>
+          <label class="cart-label" for="maya-ref">Maya Reference Number <span class="text-on-surface-variant font-normal normal-case">(optional but helpful)</span></label>
+          <input id="maya-ref" class="cart-input" type="text" placeholder="e.g. MAYA-1234567890"/>
+        </div>
+        <p id="maya-upload-error" class="hidden text-xs text-error font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">warning</span> Please upload your payment screenshot.
+        </p>
+        <button onclick="confirmMayaPayment()" class="w-full py-3.5 rounded-full font-bold text-sm text-white hover:scale-[1.02] transition-transform shadow-lg" style="background:#00b274;">
+          <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">send</span>Submit Proof & Place Order
+        </button>
+        <button onclick="backToMayaStep1()" class="w-full py-2.5 rounded-full font-semibold text-sm text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     BANK TRANSFER MODAL
+══════════════════════════════════════════════ -->
+<div id="bank-overlay" class="pay-modal-overlay fixed inset-0 z-[80] flex items-end sm:items-center justify-center sm:px-4">
+  <div id="bank-modal" class="pay-modal-box bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant" style="background:linear-gradient(135deg,#36393f08,#36393f03);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-lg bg-[#1a3a5c]">🏦</div>
+        <div>
+          <p class="font-bold text-primary text-sm">Bank Transfer</p>
+          <p class="text-xs text-on-surface-variant">BDO · BPI · UnionBank · Metrobank</p>
+        </div>
+      </div>
+      <button onclick="closeBank()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;">close</span>
+      </button>
+    </div>
+    <div class="p-5 space-y-4 overflow-y-auto max-h-[80vh]">
+      <div class="flex items-center justify-center gap-2 text-xs font-semibold">
+        <div id="bank-pill-1" class="flex items-center gap-1.5 px-3 py-1 rounded-full" style="background:#e8edf5;color:#1a3a5c;">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[10px]" style="background:#1a3a5c;">1</span>Transfer Funds
+        </div>
+        <div class="w-6 h-px bg-outline-variant"></div>
+        <div id="bank-pill-2" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[10px] bg-outline-variant text-on-surface-variant">2</span>Upload Proof
+        </div>
+      </div>
+      <div id="bank-step-1" class="space-y-4">
+        <div class="bg-surface-container rounded-xl px-4 py-3 flex items-center justify-between">
+          <span class="text-sm text-on-surface-variant font-medium">Amount to Transfer</span>
+          <span id="bank-amount" class="font-black text-primary text-xl"></span>
+        </div>
+        <!-- Bank accounts -->
+        <div class="space-y-3">
+          <!-- BDO -->
+          <div class="bg-surface-container rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-white text-xs" style="background:#0066b2;">BDO</div>
+                <span class="text-sm font-bold text-primary">BDO Unibank</span>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Name</span>
+                <span class="font-semibold text-primary">BITEZ Artisanal</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Number</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-primary tracking-wide">0012-3456-7890</span>
+                  <button onclick="copyNumber('001234567890','bdo-copy-icon')" class="p-1 rounded-full hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:14px;" id="bdo-copy-icon">content_copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- BPI -->
+          <div class="bg-surface-container rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-white text-xs" style="background:#c8102e;">BPI</div>
+                <span class="text-sm font-bold text-primary">Bank of the Philippine Islands</span>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Name</span>
+                <span class="font-semibold text-primary">BITEZ Artisanal</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Number</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-primary tracking-wide">9876-5432-10</span>
+                  <button onclick="copyNumber('9876543210','bpi-copy-icon')" class="p-1 rounded-full hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:14px;" id="bpi-copy-icon">content_copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- UnionBank -->
+          <div class="bg-surface-container rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-white text-[9px]" style="background:#e87722;">UBP</div>
+                <span class="text-sm font-bold text-primary">UnionBank</span>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Name</span>
+                <span class="font-semibold text-primary">BITEZ Artisanal</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-on-surface-variant">Account Number</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-primary tracking-wide">1122-3344-5566</span>
+                  <button onclick="copyNumber('112233445566','ubp-copy-icon')" class="p-1 rounded-full hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:14px;" id="ubp-copy-icon">content_copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-[#fff8e7] rounded-xl p-3 border-l-4 border-[#e8a200]">
+          <p class="text-xs font-bold text-[#9a6700] flex items-center gap-1.5 mb-1">
+            <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">info</span>Important
+          </p>
+          <p class="text-xs text-[#9a6700]">Transfer exactly <strong id="bank-amount-inline"></strong>. Screenshot the transaction confirmation page and upload it in the next step.</p>
+        </div>
+        <button onclick="showBankStep2()" class="w-full py-3.5 rounded-full font-bold text-sm text-white mt-2 hover:scale-[1.02] transition-transform shadow-lg" style="background:#1a3a5c;">
+          ✅ I've Transferred — Upload Proof
+        </button>
+      </div>
+      <div id="bank-step-2" class="hidden space-y-4">
+        <div class="text-center">
+          <p class="font-bold text-primary text-sm mb-1">Upload your bank transfer confirmation</p>
+          <p class="text-xs text-on-surface-variant">Screenshot or photo of the successful transfer screen.</p>
+        </div>
+        <label for="bank-file-input" class="upload-zone block p-6 text-center" id="bank-upload-zone" ondragover="onDragOver(event,'bank-upload-zone')" ondragleave="onDragLeave(event,'bank-upload-zone')" ondrop="onFileDrop(event,'bank')">
+          <div id="bank-upload-placeholder">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40 mb-2 block" style="font-variation-settings:'FILL' 1;">upload_file</span>
+            <p class="text-sm font-semibold text-primary">Tap to upload screenshot</p>
+            <p class="text-xs text-on-surface-variant mt-1">or drag and drop here</p>
+            <p class="text-xs text-on-surface-variant opacity-60 mt-1">JPG, PNG, GIF — max 10MB</p>
+          </div>
+          <div id="bank-upload-preview" class="hidden flex-col items-center gap-2">
+            <img id="bank-proof-preview-img" src="" alt="Proof" class="max-h-36 rounded-xl object-contain shadow-md"/>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#00b274] check-pop" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+              <p class="text-xs font-bold text-[#00b274]" id="bank-upload-filename">Screenshot uploaded</p>
+            </div>
+            <button type="button" onclick="clearUpload(event,'bank')" class="text-xs text-on-surface-variant underline">Remove & re-upload</button>
+          </div>
+        </label>
+        <input type="file" id="bank-file-input" accept="image/*" class="hidden" onchange="onFileSelected(this,'bank')"/>
+        <div>
+          <label class="cart-label" for="bank-ref">Bank / Reference Number <span class="text-error">*</span></label>
+          <input id="bank-ref" class="cart-input" type="text" placeholder="e.g. 1234567890"/>
+        </div>
+        <div>
+          <label class="cart-label" for="bank-name">Bank Used</label>
+          <select id="bank-name" class="cart-input">
+            <option value="">— Select bank —</option>
+            <option value="BDO">BDO Unibank</option>
+            <option value="BPI">Bank of the Philippine Islands (BPI)</option>
+            <option value="UnionBank">UnionBank</option>
+            <option value="Metrobank">Metrobank</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <p id="bank-upload-error" class="hidden text-xs text-error font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">warning</span> Please upload your payment screenshot.
+        </p>
+        <button onclick="confirmBankPayment()" class="w-full py-3.5 rounded-full font-bold text-sm text-white hover:scale-[1.02] transition-transform shadow-lg" style="background:#1a3a5c;">
+          <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">send</span>Submit Proof & Place Order
+        </button>
+        <button onclick="backToBankStep1()" class="w-full py-2.5 rounded-full font-semibold text-sm text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CREDIT / DEBIT CARD MODAL
+══════════════════════════════════════════════ -->
+<div id="card-overlay" class="pay-modal-overlay fixed inset-0 z-[80] flex items-end sm:items-center justify-center sm:px-4">
+  <div id="card-modal" class="pay-modal-box bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant" style="background:linear-gradient(135deg,#4e342e08,#4e342e03);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-lg" style="background:linear-gradient(135deg,#4e342e,#755750);">💳</div>
+        <div>
+          <p class="font-bold text-primary text-sm">Credit / Debit Card</p>
+          <p class="text-xs text-on-surface-variant">Visa · Mastercard · JCB</p>
+        </div>
+      </div>
+      <button onclick="closeCard()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;">close</span>
+      </button>
+    </div>
+    <div class="p-5 space-y-5 overflow-y-auto max-h-[80vh]">
+      <div class="bg-surface-container rounded-xl px-4 py-3 flex items-center justify-between">
+        <span class="text-sm text-on-surface-variant font-medium">Amount to Charge</span>
+        <span id="card-amount" class="font-black text-primary text-xl"></span>
+      </div>
+
+      <!-- Card preview -->
+      <div class="w-full h-36 rounded-2xl p-5 flex flex-col justify-between" style="background:linear-gradient(135deg,#361f1a,#755750);">
+        <div class="flex justify-between items-start">
+          <div class="w-9 h-6 rounded bg-[#f5d68f] opacity-80"></div>
+          <div class="flex flex-col items-end gap-0.5">
+            <span class="text-white/70 text-[10px] font-bold tracking-widest">BITEZ PAY</span>
+            <span class="text-white text-[10px] opacity-50" id="card-type-label">VISA / MASTERCARD / JCB</span>
+          </div>
+        </div>
+        <div>
+          <p class="text-white/40 text-[10px] font-bold tracking-widest uppercase mb-0.5">Card Number</p>
+          <p class="text-white font-bold tracking-widest text-sm" id="card-preview-number">•••• •••• •••• ••••</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="cart-label" for="card-name">Cardholder Name <span class="text-error">*</span></label>
+          <input id="card-name" class="cart-input" type="text" placeholder="As printed on card" autocomplete="cc-name" oninput="updateCardPreview()"/>
+        </div>
+        <div>
+          <label class="cart-label" for="card-number">Card Number <span class="text-error">*</span></label>
+          <input id="card-number" class="cart-input" type="text" placeholder="0000 0000 0000 0000" autocomplete="cc-number" maxlength="19" oninput="formatCardNumber(this); updateCardPreview()"/>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="cart-label" for="card-expiry">Expiry Date <span class="text-error">*</span></label>
+            <input id="card-expiry" class="cart-input" type="text" placeholder="MM / YY" autocomplete="cc-exp" maxlength="7" oninput="formatExpiry(this)"/>
+          </div>
+          <div>
+            <label class="cart-label" for="card-cvv">CVV / CVC <span class="text-error">*</span></label>
+            <input id="card-cvv" class="cart-input" type="password" placeholder="•••" autocomplete="cc-csc" maxlength="4"/>
+          </div>
+        </div>
+        <div>
+          <label class="cart-label" for="card-type">Card Type</label>
+          <select id="card-type" class="cart-input" onchange="onCardTypeChange()">
+            <option value="">— Select type —</option>
+            <option value="Visa">Visa</option>
+            <option value="Mastercard">Mastercard</option>
+            <option value="JCB">JCB</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bg-[#fff8e7] rounded-xl p-3 border-l-4 border-[#e8a200]">
+        <p class="text-xs font-bold text-[#9a6700] flex items-center gap-1.5 mb-1">
+          <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">lock</span>Secure & Encrypted
+        </p>
+        <p class="text-xs text-[#9a6700]">Your card details are handled securely. We do not store your CVV. An OTP may be sent to your registered number for verification.</p>
+      </div>
+
+      <p id="card-error" class="hidden text-xs text-error font-semibold flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm">warning</span> <span id="card-error-msg">Please fill in all card details.</span>
+      </p>
+
+      <button onclick="confirmCardPayment()" class="w-full py-3.5 rounded-full font-bold text-sm text-on-primary hover:scale-[1.02] transition-transform shadow-lg" style="background:#361f1a;">
+        <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">lock</span>Pay <span id="card-pay-label"></span> Securely
+      </button>
+      <button onclick="closeCard()" class="w-full py-2.5 rounded-full font-semibold text-sm text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SHOPEEPAY MODAL
+══════════════════════════════════════════════ -->
+<div id="shopee-overlay" class="pay-modal-overlay fixed inset-0 z-[80] flex items-end sm:items-center justify-center sm:px-4">
+  <div id="shopee-modal" class="pay-modal-box bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-outline-variant" style="background:linear-gradient(135deg,#ee4d2d08,#ee4d2d03);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-sm" style="background:linear-gradient(135deg,#ee4d2d,#ff7043);">S</div>
+        <div>
+          <p class="font-bold text-primary text-sm">ShopeePay</p>
+          <p class="text-xs text-on-surface-variant">Send money via ShopeePay wallet</p>
+        </div>
+      </div>
+      <button onclick="closeShopee()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px;">close</span>
+      </button>
+    </div>
+    <div class="p-5 space-y-4 overflow-y-auto max-h-[80vh]">
+      <div class="flex items-center justify-center gap-2 text-xs font-semibold">
+        <div id="shopee-pill-1" class="flex items-center gap-1.5 px-3 py-1 rounded-full" style="background:#fdecea;color:#c53d2e;">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center text-white font-bold text-[10px]" style="background:#ee4d2d;">1</span>Send Payment
+        </div>
+        <div class="w-6 h-px bg-outline-variant"></div>
+        <div id="shopee-pill-2" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant">
+          <span class="w-4 h-4 rounded-full flex items-center justify-center font-bold text-[10px] bg-outline-variant text-on-surface-variant">2</span>Upload Proof
+        </div>
+      </div>
+      <div id="shopee-step-1">
+        <div class="bg-surface-container rounded-xl px-4 py-3 flex items-center justify-between mb-4">
+          <span class="text-sm text-on-surface-variant font-medium">Amount to Pay</span>
+          <span id="shopee-amount" class="font-black text-primary text-xl"></span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-44 h-44 rounded-2xl border-4 border-white overflow-hidden shadow-lg mb-3" style="background:#f8f9fa;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=176x176&data=BITEZ_SHOPEEPAY&bgcolor=ffffff&color=ee4d2d&margin=10" alt="ShopeePay QR Code" class="w-full h-full object-cover"/>
+          </div>
+          <p class="text-xs text-on-surface-variant font-medium mb-1">or use this ShopeePay ID / number</p>
+          <div class="flex items-center gap-2 bg-surface-container rounded-xl px-5 py-3">
+            <span class="font-black text-primary text-lg tracking-widest">0917-123-4567</span>
+            <button onclick="copyNumber('09171234567','shopee-copy-icon')" class="p-1.5 rounded-full hover:bg-surface-container-high transition-colors">
+              <span class="material-symbols-outlined text-secondary" style="font-size:18px;" id="shopee-copy-icon">content_copy</span>
+            </button>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-2 opacity-70">Account Name: <span class="font-bold text-primary">BITEZ Artisanal</span></p>
+        </div>
+        <div class="bg-surface-container rounded-xl p-4 space-y-2 mt-1">
+          <p class="text-xs font-bold text-primary uppercase tracking-wide">How to pay via ShopeePay</p>
+          <div class="space-y-1.5">
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#ee4d2d;">1</span>Open Shopee app → tap <strong class="text-primary">ShopeePay</strong></div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#ee4d2d;">2</span>Tap <strong class="text-primary">Transfer</strong> → enter the number or scan QR above</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#ee4d2d;">3</span>Send exactly <strong id="shopee-amount-inline" class="text-primary"></strong> and screenshot the confirmation</div>
+            <div class="flex gap-2 items-start text-xs text-on-surface-variant"><span class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-[10px] mt-0.5" style="background:#ee4d2d;">4</span>Tap <strong class="text-primary">I've Paid</strong> and upload your screenshot</div>
+          </div>
+        </div>
+        <button onclick="showShopeeStep2()" class="w-full py-3.5 rounded-full font-bold text-sm text-white mt-2 hover:scale-[1.02] transition-transform shadow-lg" style="background:#ee4d2d;">
+          ✅ I've Paid — Upload Proof
+        </button>
+      </div>
+      <div id="shopee-step-2" class="hidden space-y-4">
+        <div class="text-center">
+          <p class="font-bold text-primary text-sm mb-1">Upload your ShopeePay screenshot</p>
+          <p class="text-xs text-on-surface-variant">We'll verify your payment before confirming your order.</p>
+        </div>
+        <label for="shopee-file-input" class="upload-zone shopee-upload-zone block p-6 text-center" id="shopee-upload-zone" ondragover="onDragOver(event,'shopee-upload-zone')" ondragleave="onDragLeave(event,'shopee-upload-zone')" ondrop="onFileDrop(event,'shopee')">
+          <div id="shopee-upload-placeholder">
+            <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40 mb-2 block" style="font-variation-settings:'FILL' 1;">upload_file</span>
+            <p class="text-sm font-semibold text-primary">Tap to upload screenshot</p>
+            <p class="text-xs text-on-surface-variant mt-1">or drag and drop here</p>
+            <p class="text-xs text-on-surface-variant opacity-60 mt-1">JPG, PNG, GIF — max 10MB</p>
+          </div>
+          <div id="shopee-upload-preview" class="hidden flex-col items-center gap-2">
+            <img id="shopee-proof-preview-img" src="" alt="Proof" class="max-h-36 rounded-xl object-contain shadow-md"/>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[#00b274] check-pop" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+              <p class="text-xs font-bold text-[#00b274]" id="shopee-upload-filename">Screenshot uploaded</p>
+            </div>
+            <button type="button" onclick="clearUpload(event,'shopee')" class="text-xs text-on-surface-variant underline">Remove & re-upload</button>
+          </div>
+        </label>
+        <input type="file" id="shopee-file-input" accept="image/*" class="hidden" onchange="onFileSelected(this,'shopee')"/>
+        <div>
+          <label class="cart-label" for="shopee-ref">ShopeePay Reference Number <span class="text-on-surface-variant font-normal normal-case">(optional but helpful)</span></label>
+          <input id="shopee-ref" class="cart-input" type="text" placeholder="e.g. SPY-1234567890"/>
+        </div>
+        <p id="shopee-upload-error" class="hidden text-xs text-error font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">warning</span> Please upload your payment screenshot.
+        </p>
+        <button onclick="confirmShopeePayment()" class="w-full py-3.5 rounded-full font-bold text-sm text-white hover:scale-[1.02] transition-transform shadow-lg" style="background:#ee4d2d;">
+          <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">send</span>Submit Proof & Place Order
+        </button>
+        <button onclick="backToShopeeStep1()" class="w-full py-2.5 rounded-full font-semibold text-sm text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     CART DRAWER
+══════════════════════════════════════════════ -->
+<div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-surface-container-lowest z-50 shadow-2xl flex flex-col">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <h2 class="font-headline text-xl font-bold text-primary">Your Box</h2>
+      <div id="step-pills" class="flex items-center gap-1.5">
+        <div class="step-indicator current w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center" id="pill-1">1</div>
+        <div class="w-4 h-px bg-outline-variant"></div>
+        <div class="step-indicator pending w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center" id="pill-2">2</div>
+        <div class="w-4 h-px bg-outline-variant"></div>
+        <div class="step-indicator pending w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center" id="pill-3">3</div>
+      </div>
+    </div>
+    <button onclick="closeCart()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined text-primary">close</span>
+    </button>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step-1" class="cart-step active flex-col flex-1 min-h-0">
+    <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+      <div id="cart-empty" class="flex flex-col items-center justify-center h-48 text-on-surface-variant">
+        <span class="material-symbols-outlined text-5xl opacity-30 mb-3">shopping_bag</span>
+        <p class="text-sm">Your box is empty.</p>
+        <p class="text-xs mt-1 opacity-60">Add some delicious cookies!</p>
+      </div>
+    </div>
+    <div class="px-6 py-5 border-t border-outline-variant space-y-3 flex-shrink-0">
+      <div class="flex justify-between items-center">
+        <span class="font-bold text-primary">Subtotal</span>
+        <span id="cart-total" class="font-bold text-primary text-lg">₱0.00</span>
+      </div>
+      <button id="proceed-to-details-btn" onclick="goToStep(2)"
+        class="w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm hover:scale-[1.02] transition-transform shadow-lg disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:scale-100" disabled>
+        Continue to Details <span class="material-symbols-outlined text-sm align-middle ml-1">arrow_forward</span>
+      </button>
+      <button onclick="closeCart()" class="w-full py-3 bg-surface-container text-primary rounded-full font-semibold text-sm hover:bg-surface-container-high transition-colors">Continue Shopping</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step-2" class="cart-step flex-col flex-1 min-h-0">
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+      <button onclick="goToStep(1)" class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Cart
+      </button>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">Your Info</p>
+        <div class="space-y-3">
+          <div><label class="cart-label" for="cust-name">Full Name <span class="text-error">*</span></label><input id="cust-name" class="cart-input" type="text" placeholder="e.g. Maria Santos" autocomplete="name"/></div>
+          <div><label class="cart-label" for="cust-phone">Phone Number <span class="text-error">*</span></label><input id="cust-phone" class="cart-input" type="tel" placeholder="e.g. 09xx-xxx-xxxx" autocomplete="tel"/></div>
+          <div><label class="cart-label" for="cust-email">Email Address</label><input id="cust-email" class="cart-input" type="email" placeholder="for order confirmation (optional)" autocomplete="email"/></div>
+        </div>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">Special Requests</p>
+        <div class="space-y-3">
+          <div><label class="cart-label" for="cust-note">Order Notes</label><textarea id="cust-note" class="cart-input resize-none" rows="2" placeholder="Allergies, custom messages, gift wrapping, etc."></textarea></div>
+          <div><label class="cart-label" for="cust-date">Preferred Date <span class="text-error">*</span></label><input id="cust-date" class="cart-input" type="date"/></div>
+        </div>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">How would you like to receive it?</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="fulfillment-card p-4 flex flex-col items-center gap-2 text-center" onclick="selectFulfillment('pickup')" id="fcard-pickup">
+            <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-2xl">🛍️</div>
+            <div><p class="font-bold text-primary text-sm">Pick Up</p><p class="text-xs text-on-surface-variant mt-0.5 leading-snug">Collect at our store</p></div>
+            <span class="material-symbols-outlined text-primary fcard-check" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="fulfillment-card p-4 flex flex-col items-center gap-2 text-center" onclick="selectFulfillment('delivery')" id="fcard-delivery">
+            <div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-2xl">🛵</div>
+            <div><p class="font-bold text-primary text-sm">Delivery</p><p class="text-xs text-on-surface-variant mt-0.5 leading-snug">Delivered to your door</p></div>
+            <span class="material-symbols-outlined text-primary fcard-check" style="font-size:18px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+        </div>
+        <div id="pickup-details" class="hidden mt-3 bg-surface-container rounded-xl p-4 space-y-1">
+          <p class="text-xs font-bold text-primary">📍 Pickup Location</p>
+          <p class="text-xs text-on-surface-variant">BITEZ Artisanal Confections</p>
+          <p class="text-xs text-on-surface-variant">Poblacion, Cantilan, Surigao del Sur</p>
+          <p class="text-xs text-on-surface-variant mt-1">⏰ Mon–Sat · 9:00 AM – 6:00 PM</p>
+        </div>
+        <div id="delivery-details" class="hidden mt-3 space-y-3">
+          <div>
+            <label class="cart-label" for="cust-zone">Delivery Zone <span class="text-error">*</span></label>
+            <select id="cust-zone" class="cart-input" onchange="onZoneChange()">
+              <option value="">— Select your area —</option>
+              <option value="zone1" data-fee="50">Zone 1 — Linintian, Cantilan (₱50)</option>
+              <option value="zone2" data-fee="80">Zone 2 — Magosilom, Cantilan (₱80)</option>
+              <option value="zone3" data-fee="100">Zone 3 — Pag-antayan, Cantilan (₱100)</option>
+              <option value="zone4" data-fee="100">Zone 4 — Tapa, Cantilan (₱100)</option>
+              <option value="zone5" data-fee="150">Zone 5 — Outside Cantilan / Surigao del Sur (₱150)</option>
+            </select>
+          </div>
+          <div id="zone-fee-badge" class="hidden items-center justify-between bg-secondary-container rounded-xl px-4 py-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary text-base" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+              <span class="text-sm font-semibold text-primary" id="zone-fee-label">Delivery Fee</span>
+            </div>
+            <span class="font-black text-primary text-base" id="zone-fee-amount"></span>
+          </div>
+          <div><label class="cart-label" for="cust-address">Delivery Address <span class="text-error">*</span></label><textarea id="cust-address" class="cart-input resize-none" rows="2" placeholder="House/Unit no., Street, Barangay, City"></textarea></div>
+          <div><label class="cart-label" for="cust-landmark">Landmark (optional)</label><input id="cust-landmark" class="cart-input" type="text" placeholder="e.g. Near SM Lanang"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-5 border-t border-outline-variant flex-shrink-0">
+      <button onclick="goToStep(3)" class="w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm hover:scale-[1.02] transition-transform shadow-lg">
+        Review Order <span class="material-symbols-outlined text-sm align-middle ml-1">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step-3" class="cart-step flex-col flex-1 min-h-0">
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+      <button onclick="goToStep(2)" class="flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Back to Details
+      </button>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">Order Summary</p>
+        <div id="review-items" class="bg-surface-container rounded-xl px-4 py-2 space-y-0"></div>
+        <div class="mt-3 px-1 space-y-1.5">
+          <div class="flex justify-between items-center"><span class="text-sm text-on-surface-variant">Items Subtotal</span><span id="review-subtotal" class="text-sm font-semibold text-primary"></span></div>
+          <div id="review-delivery-fee-row" class="hidden flex justify-between items-center">
+            <span class="text-sm text-on-surface-variant flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm text-secondary" style="font-variation-settings:'FILL' 1;">local_shipping</span>
+              Delivery Fee <span class="text-xs opacity-60" id="review-zone-label"></span>
+            </span>
+            <span class="text-sm font-semibold text-primary" id="review-delivery-fee-amount"></span>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-outline-variant">
+            <span class="font-bold text-primary text-sm">Total</span>
+            <span id="review-grand-total" class="font-black text-primary text-lg"></span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">Your Details</p>
+        <div class="bg-surface-container rounded-xl p-4 space-y-2" id="review-customer-info"></div>
+      </div>
+      <div id="review-fulfillment-block">
+        <p class="font-headline font-bold text-primary text-base mb-3">Fulfillment</p>
+        <div class="bg-surface-container rounded-xl p-4" id="review-fulfillment-info"></div>
+      </div>
+      <div>
+        <p class="font-headline font-bold text-primary text-base mb-3">Payment Method</p>
+        <div class="space-y-2" id="payment-options">
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl" onclick="selectPayment(this,'cod')">
+            <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-lg flex-shrink-0">💵</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">Cash on Delivery / Pick Up</p><p class="text-xs text-on-surface-variant">Pay when you receive your order</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl relative overflow-hidden" onclick="selectPayment(this,'gcash')">
+            <div class="absolute top-0 right-0 bg-[#007bff] text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg tracking-wide">RECOMMENDED</div>
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden" style="background:#007bff;"><span class="text-white font-black text-sm">G</span></div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">GCash</p><p class="text-xs text-on-surface-variant">Scan QR or send to number · instant</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl" onclick="selectPayment(this,'maya')">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-black text-white" style="background:linear-gradient(135deg,#00b274,#00d68f);">M</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">Maya (PayMaya)</p><p class="text-xs text-on-surface-variant">Send via Maya e-wallet</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl" onclick="selectPayment(this,'card')">
+            <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-lg flex-shrink-0">💳</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">Credit / Debit Card</p><p class="text-xs text-on-surface-variant">Visa, Mastercard, JCB</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl" onclick="selectPayment(this,'bank')">
+            <div class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-lg flex-shrink-0">🏦</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">Bank Transfer</p><p class="text-xs text-on-surface-variant">BDO, BPI, UnionBank, Metrobank</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+          <div class="payment-opt flex items-center gap-3 p-3 bg-surface-container rounded-xl" onclick="selectPayment(this,'shopeepay')">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-black text-white" style="background:linear-gradient(135deg,#ee4d2d,#ff7043);">S</div>
+            <div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary">ShopeePay</p><p class="text-xs text-on-surface-variant">Send via ShopeePay wallet</p></div>
+            <span class="material-symbols-outlined text-primary pay-check opacity-0 transition-opacity" style="font-size:20px;font-variation-settings:'FILL' 1;">check_circle</span>
+          </div>
+        </div>
+        <p id="payment-warning" class="hidden mt-2 text-xs text-error font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">warning</span> Please select a payment method.
+        </p>
+      </div>
+    </div>
+    <div class="px-6 py-5 border-t border-outline-variant flex-shrink-0">
+      <button onclick="placeOrder()" class="w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm hover:scale-[1.02] transition-transform shadow-lg">
+        <span class="material-symbols-outlined text-sm align-middle mr-1" style="font-variation-settings:'FILL' 1;">check_circle</span>Place Order
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div id="step-4" class="cart-step flex-col items-center justify-center flex-1 min-h-0 px-6 py-10 text-center">
+    <div class="success-icon w-20 h-20 rounded-full bg-surface-container flex items-center justify-center text-4xl mb-4">🎉</div>
+    <h3 class="font-headline font-bold text-2xl text-primary fade-up" style="animation-delay:0.15s">Order Placed!</h3>
+    <p class="text-sm text-on-surface-variant mt-2 max-w-xs fade-up" style="animation-delay:0.25s" id="success-msg">Thank you! We'll be in touch shortly to confirm your order.</p>
+    <div id="success-details" class="mt-5 w-full bg-surface-container rounded-xl p-4 text-left space-y-1.5 fade-up" style="animation-delay:0.35s"></div>
+    <div id="payment-success-note" class="hidden mt-3 w-full rounded-xl p-3 text-left fade-up" style="animation-delay:0.4s;"></div>
+    <button onclick="closeCartAndReset()" class="mt-6 w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm hover:scale-[1.02] transition-transform shadow-lg fade-up" style="animation-delay:0.45s">
+      Continue Shopping
+    </button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] bg-primary text-on-primary px-6 py-3 rounded-full shadow-xl font-semibold text-sm flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check_circle</span>
+  <span id="toast-msg">Added to box!</span>
+</div>
+
+<!-- CAKE PICKER MODAL -->
+<div id="cake-picker-overlay" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:px-4 pb-0 sm:pb-4" style="opacity:0;pointer-events:none;transition:opacity 0.25s ease;background:rgba(26,12,10,0.55);backdrop-filter:blur(4px);">
+  <div id="cake-picker-modal" class="bg-surface-container-lowest w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden" style="transform:translateY(28px) scale(0.96);opacity:0;transition:transform 0.32s cubic-bezier(0.34,1.4,0.64,1),opacity 0.25s ease;">
+    <div class="relative">
+      <img id="picker-img" src="" alt="" class="w-full h-44 object-cover"/>
+      <div class="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"></div>
+      <button onclick="closeCakePicker()" class="absolute top-3 right-3 w-8 h-8 bg-black/30 hover:bg-black/55 rounded-full flex items-center justify-center transition-colors">
+        <span class="material-symbols-outlined text-white" style="font-size:18px;">close</span>
+      </button>
+      <div class="absolute bottom-4 left-4 right-12">
+        <p class="text-white font-headline font-bold text-xl leading-tight" id="picker-name"></p>
+        <p class="text-white/65 text-xs mt-0.5 font-medium tracking-wide uppercase">Choose your size</p>
+      </div>
+    </div>
+    <div class="p-5 space-y-3">
+      <div class="cake-option p-4 flex items-center gap-3" onclick="selectCakeOption('slice')" id="option-slice">
+        <div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 text-2xl select-none">🍰</div>
+        <div class="flex-1 min-w-0"><p class="font-bold text-primary text-sm">Per Slice</p><p class="text-xs text-on-surface-variant mt-0.5 leading-snug">Single serving · Perfect to try</p></div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <span class="font-bold text-primary text-sm" id="picker-slice-price"></span>
+          <span class="material-symbols-outlined text-primary option-check" style="font-size:20px;font-variation-settings:'FILL' 1;" id="check-slice">check_circle</span>
+        </div>
+      </div>
+      <div class="cake-option p-4 flex items-center gap-3" onclick="selectCakeOption('whole')" id="option-whole">
+        <div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 text-2xl select-none">🎂</div>
+        <div class="flex-1 min-w-0"><p class="font-bold text-primary text-sm">Whole Cake</p><p class="text-xs text-on-surface-variant mt-0.5 leading-snug">Full cake · Great for celebrations</p></div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <span class="font-bold text-primary text-sm" id="picker-whole-price"></span>
+          <span class="material-symbols-outlined text-primary option-check" style="font-size:20px;font-variation-settings:'FILL' 1;" id="check-whole">check_circle</span>
+        </div>
+      </div>
+      <button id="picker-add-btn" onclick="confirmCakeAdd()" disabled
+        class="w-full py-3.5 mt-1 bg-primary text-on-primary rounded-full font-bold text-sm transition-all duration-200 disabled:opacity-35 disabled:cursor-not-allowed enabled:hover:scale-[1.02] enabled:hover:shadow-lg enabled:active:scale-[0.98]">
+        <span id="picker-btn-label">Select a size to continue</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<nav id="main-nav" class="fixed top-0 w-full z-30 bg-[#fafaf5]/80 backdrop-blur-md transition-shadow duration-300">
+  <div class="flex justify-between items-center w-full px-6 lg:px-8 py-4 max-w-7xl mx-auto">
+    <a href="index.html" class="text-2xl font-['Noto_Serif'] italic font-black text-[#361f1a] hover:opacity-80 transition-opacity">BITEZ</a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a href="index.html#shop" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight">Shop</a>
+      <a href="index.html#best-sellers" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight">Best Sellers</a>
+      <a href="index.html#categories" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight">Categories</a>
+      <a href="index.html#our-story" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight">Our Story</a>
+    </div>
+    <div class="flex items-center gap-3 text-[#361f1a]">
+      <button onclick="openSearch()" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-outline-variant hover:bg-surface-container transition-colors text-on-surface-variant hover:text-primary" title="Search products">
+        <span class="material-symbols-outlined text-base">search</span>
+        <span class="text-xs font-semibold hidden sm:inline">Search</span>
+      </button>
+      <button onclick="openCart()" class="relative scale-105 transition-transform duration-200 hover:scale-110">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full hidden items-center justify-center">0</span>
+      </button>
+      <button id="menu-btn" class="md:hidden p-1" onclick="toggleMenu()">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="md:hidden bg-[#fafaf5]/95 backdrop-blur-md border-t border-outline-variant/30">
+    <div class="flex flex-col px-6 py-4 gap-4">
+      <a href="index.html" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30">← Back to Home</a>
+      <a href="#cookies" onclick="filterCat('cookies');toggleMenu()" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30">Cookies</a>
+      <a href="#brownies" onclick="filterCat('brownies');toggleMenu()" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30">Brownies</a>
+      <a href="#cakes" onclick="filterCat('cakes');toggleMenu()" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30">Cakes</a>
+      <a href="#gifts" onclick="filterCat('gifts');toggleMenu()" class="font-['Noto_Serif'] font-bold text-primary py-2">Gift Boxes</a>
+    </div>
+  </div>
+</nav>
+
+<!-- SHOP HERO -->
+<section class="shop-hero-bg pt-32 pb-16 px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center gap-2 text-sm text-on-surface-variant mb-8">
+      <a href="index.html" class="hover:text-primary transition-colors">Home</a>
+      <span class="material-symbols-outlined text-base opacity-40">chevron_right</span>
+      <span class="text-primary font-semibold">All Products</span>
+    </div>
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+      <div>
+        <h1 class="font-headline text-5xl md:text-7xl font-black text-primary leading-tight">The Full <span class="italic text-secondary">Bitez</span> Collection.</h1>
+        <p class="text-lg text-on-surface-variant mt-4 max-w-xl">Every cookie, brownie, cake, and gift box we bake — all in one place.</p>
+      </div>
+      <div class="flex flex-col gap-3 self-start lg:self-end">
+        <div class="flex items-center gap-3 bg-surface-container-lowest rounded-2xl px-6 py-4 shadow-sm">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1;">verified</span>
+          <div><p class="font-bold text-primary text-sm">Fresh Today</p><p class="text-xs text-on-surface-variant">Baked this morning</p></div>
+        </div>
+        <button onclick="openSearch()" class="flex items-center gap-3 bg-surface-container-lowest rounded-2xl px-5 py-3.5 shadow-sm border border-outline-variant hover:border-primary transition-colors text-left group">
+          <span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">search</span>
+          <span class="text-sm text-on-surface-variant group-hover:text-primary transition-colors">Search our menu…</span>
+          <kbd class="ml-auto hidden sm:flex items-center gap-1 px-2 py-1 bg-surface-container rounded-md text-[10px] font-bold text-on-surface-variant border border-outline-variant">/</kbd>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FILTER TOOLBAR -->
+<div class="sticky top-[72px] z-20 bg-[#fafaf5]/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="flex items-center justify-between gap-4 py-4 overflow-x-auto no-scrollbar">
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button id="tab-all" class="cat-tab active px-5 py-2 rounded-full border border-outline-variant font-semibold text-sm text-primary" onclick="filterCat('all')">All</button>
+        <button id="tab-cookies" class="cat-tab px-5 py-2 rounded-full border border-outline-variant font-semibold text-sm text-on-surface-variant hover:text-primary" onclick="filterCat('cookies')">🍪 Cookies</button>
+        <button id="tab-brownies" class="cat-tab px-5 py-2 rounded-full border border-outline-variant font-semibold text-sm text-on-surface-variant hover:text-primary" onclick="filterCat('brownies')">🍫 Brownies</button>
+        <button id="tab-cakes" class="cat-tab px-5 py-2 rounded-full border border-outline-variant font-semibold text-sm text-on-surface-variant hover:text-primary" onclick="filterCat('cakes')">🎂 Cakes</button>
+        <button id="tab-gifts" class="cat-tab px-5 py-2 rounded-full border border-outline-variant font-semibold text-sm text-on-surface-variant hover:text-primary" onclick="filterCat('gifts')">🎁 Gift Boxes</button>
+      </div>
+      <div class="flex items-center gap-4 flex-shrink-0">
+        <span id="result-count" class="text-xs text-on-surface-variant font-medium whitespace-nowrap"></span>
+        <div class="relative">
+          <button onclick="toggleSort()" class="flex items-center gap-1.5 px-4 py-2 rounded-full border border-outline-variant text-sm font-semibold text-primary hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-base">sort</span>
+            <span id="sort-label">Sort</span>
+          </button>
+          <div id="sort-dropdown" class="hidden absolute right-0 top-full mt-2 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant overflow-hidden w-44 z-30">
+            <button class="sort-opt w-full text-left px-4 py-3 text-sm hover:bg-surface-container transition-colors text-primary font-medium" data-sort="default">Featured</button>
+            <button class="sort-opt w-full text-left px-4 py-3 text-sm hover:bg-surface-container transition-colors text-on-surface-variant" data-sort="price-asc">Price: Low → High</button>
+            <button class="sort-opt w-full text-left px-4 py-3 text-sm hover:bg-surface-container transition-colors text-on-surface-variant" data-sort="price-desc">Price: High → Low</button>
+            <button class="sort-opt w-full text-left px-4 py-3 text-sm hover:bg-surface-container transition-colors text-on-surface-variant" data-sort="name">Name A–Z</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT GRID -->
+<main class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+  <div class="flex flex-wrap items-center gap-4 mb-8 px-1">
+    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide">Availability:</p>
+    <div class="flex items-center gap-1.5 text-xs text-on-surface-variant"><span class="avail-dot-green"></span>In Stock</div>
+    <div class="flex items-center gap-1.5 text-xs text-on-surface-variant"><span class="avail-dot-yellow"></span>Low Stock</div>
+    <div class="flex items-center gap-1.5 text-xs text-on-surface-variant"><span class="avail-dot-red"></span>Out of Stock</div>
+  </div>
+  <section id="section-cookies" class="mb-16">
+    <div class="flex items-center gap-4 mb-8"><h2 class="font-headline text-3xl font-bold text-primary">Cookies</h2><div class="flex-1 h-px bg-outline-variant"></div></div>
+    <div id="grid-cookies" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </section>
+  <section id="section-brownies" class="mb-16">
+    <div class="flex items-center gap-4 mb-8"><h2 class="font-headline text-3xl font-bold text-primary">Brownies</h2><div class="flex-1 h-px bg-outline-variant"></div></div>
+    <div id="grid-brownies" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </section>
+  <section id="section-cakes" class="mb-16">
+    <div class="flex items-center gap-4 mb-8"><h2 class="font-headline text-3xl font-bold text-primary">Cakes</h2><div class="flex-1 h-px bg-outline-variant"></div></div>
+    <div id="grid-cakes" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </section>
+  <section id="section-gifts" class="mb-16">
+    <div class="flex items-center gap-4 mb-8"><h2 class="font-headline text-3xl font-bold text-primary">Gift Boxes</h2><div class="flex-1 h-px bg-outline-variant"></div></div>
+    <div id="grid-gifts" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </section>
+  <div id="no-results" class="hidden flex flex-col items-center justify-center py-24 text-center">
+    <span class="material-symbols-outlined text-6xl opacity-20 mb-4">search_off</span>
+    <p class="font-headline text-2xl font-bold text-primary mb-2">No results found</p>
+    <p class="text-on-surface-variant text-sm" id="no-results-msg">Try a different keyword.</p>
+    <button onclick="clearSearch()" class="mt-4 px-6 py-2.5 bg-primary text-on-primary rounded-full text-sm font-bold hover:scale-105 transition-transform">Show All Products</button>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="w-full rounded-t-[2rem] bg-[#eeeee9] mt-8">
+  <div class="flex flex-col md:flex-row justify-between items-center w-full px-12 py-16 gap-8 max-w-7xl mx-auto">
+    <div class="text-left space-y-4">
+      <div class="font-['Noto_Serif'] text-xl font-bold text-[#361f1a]">BITEZ</div>
+      <p class="max-w-xs font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442]">Baking the world a sweeter place, one small batch at a time.</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-8">
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Shipping &amp; Returns</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Wholesale</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Contact Us</a>
+    </div>
+  </div>
+  <div class="w-full text-center py-6 border-t border-outline-variant/10">
+    <p class="font-['Plus_Jakarta_Sans'] text-xs text-[#504442] opacity-60">© 2024 BITEZ Artisanal Confections.</p>
+  </div>
+</footer>
+
+<script>
+// ── PRODUCT DATA ────────────────────────────────────────────
+const PRODUCTS = {
+  cookies: [
+    { id: 'c1', name: 'Midnight Truffle', desc: 'Double dark cocoa dough, molten dark chocolate center.', price: 35.00, badge: 'new', availability: 'in-stock', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDXMf2f0RBgCNSe0qw6pQOoQfPpqkc0HjiUhtBfSO8cOKTc5RMyztKvxylcUlg8EaIIKJu7EMbVb_Z9leCE-X69gYdCEWczay3F14mPcxDC2Q6vUrFgOPSkS4pkfob6IWVusCROWutVgctjvbExY6eSeJG6cNC-FsiIJkAf5evEoKHvC1FgCfjsjHul4AnCRlopfHEuV8mRP1OMAephE1mkKvTcJ-UsK7WqPXeyUTFmzzA93nJzqAbdzsTMjqyL8eOynUEM0KgOH9I' },
+    { id: 'c2', name: 'Salted Macadamia', desc: 'Buttery Hawaiian macadamia nuts with fleur de sel.', price: 25.00, badge: 'bestseller', availability: 'low-stock', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCThA5RQ1p2yklqzM082Ul-rlTitis404YB9QEBrS9fvybTb9kDo_GNDFZIpMZnE8RnwdO6hz-X-7lrYf6622hfCg06l26JIsEqpwQT0yAWYexFw1hfJ6mSBwByfcGyGC46jA5A9AwHOjFYwy9AinKthZ0JZRQn1hX4Y0KVPTLSPlx5UO97VkdxfR1dLodEFLp3c-G3iyCaDYKD3oCP97S0nN1_pUfgT7ez-FhxV_zQRXT6Ky7BzAQxySiE1mMigr-nhu0Axj9k_FE' },
+    { id: 'c3', name: 'Spiced Ginger', desc: 'Warm molasses, fresh ground ginger, a touch of pepper.', price: 25.00, badge: 'seasonal', availability: 'in-stock', img: 'https://mealsnrecipes.com/wp-content/uploads/2025/04/Classic20Spiced20Ginger20Cookies2028Guaranteed20Soft202620Chewy2129_featured_b64.jpg' },
+    { id: 'c4', name: 'Blueberry Crumb', desc: 'Fresh wild blueberries nestled in brown-butter dough.', price: 40.00, badge: '', availability: 'out-of-stock', img: 'https://meal.viralestories.com/wp-content/uploads/2025/12/593592717_122231403530102037_2890259125030748409_n.jpg' },
+    { id: 'c5', name: 'Classic Oatmeal', desc: 'Hearty rolled oats, plump sun-dried raisins, cinnamon.', price: 25.00, badge: 'bestseller', availability: 'in-stock', img: 'https://flavorfulkitchenn.com/wp-content/uploads/2026/01/workssttaa_httpss.mj_.runU70ZS0yQOrk_Chewy_Oatmeal_Raisin_Cook_177802f2-3e1f-466f-99a9-a188eac1f19d_3.png' },
+    { id: 'c6', name: 'Brown Butter Choc Chip', desc: 'Nutty browned butter, two types of Ghanaian chocolate chips.', price: 35.00, badge: 'bestseller', availability: 'in-stock', img: 'https://i.pinimg.com/1200x/94/74/51/9474512a222c586595667b2d3c0270a7.jpg' },
+    { id: 'c7', name: 'Lemon Tahini', desc: 'Zesty lemon zest married with creamy sesame tahini.', price: 25.00, badge: 'new', availability: 'low-stock', img: 'https://i.pinimg.com/1200x/15/52/de/1552decc08d0c7969d883a79c8331110.jpg' },
+    { id: 'c8', name: 'Matcha White Choc', desc: 'Ceremonial grade matcha swirled with white chocolate drops.', price: 25.00, badge: 'limited', availability: 'out-of-stock', img: 'https://teakandthyme.com/wp-content/uploads/2023/09/matcha-white-chocolate-cookies-DSC_5105-1600.jpg' },
+  ],
+  brownies: [
+    { id: 'b1', name: 'Classic Fudge Brownie', desc: 'Dense, fudgy, crinkle-topped. The platonic ideal of a brownie.', price: 50.00, badge: 'bestseller', availability: 'in-stock', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAS1BmligWOhm3FCHtO4-mYKyyrjvfe5rJXTsIs361jiwOxumOZHE33Xxhji9myL0hBkCeI5ZJPdMa81TAXeD0lT1BxiNeEuaVt5pmQwPU0KEbq-UDGqZoFyPLyiA_M9SxSdR4iRG0IoSwmBvse0SzqMqiDnmM2EssN7L1zODbRxZ-alokFVuu6fLrBRibXUeyhU6bQAdnLet4QcoLgDfSPOTd63S6iOCnSFEm0PuVJ0SEHHLyVLvk3bAEK9uGfQWgMN2zOUf2HADE' },
+    { id: 'b2', name: 'Walnut Espresso', desc: 'Deep espresso bitterness balanced by toasted walnuts.', price: 60.00, badge: 'new', availability: 'in-stock', img: 'https://i.pinimg.com/736x/ee/bc/d4/eebcd46bcf9701c4984f30ef18e8b1ef.jpg' },
+    { id: 'b3', name: 'Sea Salt Caramel', desc: 'Salted caramel ribbons swirled through pure dark chocolate.', price: 80.00, badge: 'bestseller', availability: 'low-stock', img: 'https://www.sarahsloft.com/image/cache/catalog/All%20Cake%20Photos/Ala%20Carte%20Desserts/7.%20Salted%20Caramel%20Dark%20Chocolate%20Brownies-3000x4000.jpg' },
+    { id: 'b4', name: 'Raspberry Cheesecake', desc: 'Swirls of cream cheese and tart raspberry jam.', price: 95.00, badge: 'limited', availability: 'out-of-stock', img: 'https://www.recipesquickie.com/wp-content/uploads/2025/03/Raspberry-Cheesecake-Brownies.jpg' },
+  ],
+  cakes: [
+    { id: 'k1', name: 'Dark Chocolate Layer Cake', desc: 'Three layers of deep cocoa sponge with dark ganache.', price: { slice: 190.00, whole: 1300.00 }, badge: 'bestseller', availability: 'in-stock', img: 'https://recipesbyhannah.com/assets/images/1737382270893-g6qpydy3.webp' },
+    { id: 'k2', name: 'Lemon Olive Oil', desc: 'Bright, fragrant lemon with Italian extra-virgin olive oil.', price: { slice: 180.00, whole: 1100.00 }, badge: 'new', availability: 'in-stock', img: 'https://i.pinimg.com/originals/2a/0e/5a/2a0e5acf7e2dcf0838d06e976be7fcc4.jpg' },
+    { id: 'k3', name: 'Carrot Walnut', desc: 'Classic carrot cake with brown-sugar cream cheese frosting.', price: { slice: 200.00, whole: 1400.00 }, badge: 'seasonal', availability: 'low-stock', img: 'https://jowelrecipes.com/wp-content/uploads/2025/03/image_fx_-2025-03-23T030133.431-1024x559.png' },
+    { id: 'k4', name: 'Brown Butter Vanilla', desc: 'Delicate vanilla bean sponge with whipped brown butter cream.', price: { slice: 140.00, whole: 1000.00 }, badge: '', availability: 'out-of-stock', img: 'https://buttermilkbysam.com/wp-content/uploads/2025/01/brown-butter-vanilla-cake-bbs-14-819x1024.webp' },
+  ],
+  gifts: [
+    { id: 'g1', name: 'The Sampler Box', desc: '12 cookies — every flavor in our seasonal rotation.', price: 399.00, badge: 'bestseller', availability: 'in-stock', img: 'https://i.pinimg.com/736x/3a/3f/34/3a3f34edca676536dff3945be39d2024.jpg' },
+    { id: 'g2', name: 'Brownie & Cookie Duo', desc: '6 signature brownies + 6 best-seller cookies.', price: 799.00, badge: 'new', availability: 'low-stock', img: 'https://i.pinimg.com/1200x/37/54/ea/3754eaef38ae9e5b75409815b3ecdd51.jpg' },
+    { id: 'g3', name: 'The Luxury Collection', desc: '18 assorted confections in our premium keepsake box.', price: 1499.00, badge: 'limited', availability: 'in-stock', img: 'https://i.pinimg.com/1200x/29/80/ea/2980ea58edd65c973d12f0d27a5a2f37.jpg' },
+    { id: 'g4', name: 'Birthday Bliss Box', desc: 'Customizable dozen with ribbon, card, and festive tissue.', price: 899.00, badge: 'seasonal', availability: 'out-of-stock', img: 'https://i.pinimg.com/736x/ce/93/33/ce9333adf00dbc30330c8ec585aa1360.jpg' },
+  ],
+};
+
+const ALL_PRODUCTS = Object.entries(PRODUCTS).flatMap(([cat, items]) => items.map(p => ({...p, cat})));
+
+const BADGE_CFG = {
+  new: { cls: 'badge-new', label: 'New' },
+  bestseller: { cls: 'badge-bestseller', label: 'Best Seller' },
+  seasonal: { cls: 'badge-seasonal', label: 'Seasonal' },
+  limited: { cls: 'badge-limited', label: 'Limited' },
+};
+const AVAIL_CFG = {
+  'in-stock':    { dot: 'avail-dot-green',  label: 'In Stock',     cls: 'text-[#00874f]' },
+  'low-stock':   { dot: 'avail-dot-yellow', label: 'Low Stock',    cls: 'text-[#9a6700]' },
+  'out-of-stock':{ dot: 'avail-dot-red',    label: 'Out of Stock', cls: 'text-error' },
+};
+
+// ── CAKE PICKER ────────────────────────────────────────────
+let pickerCake = null, pickerChoice = null;
+function openCakePicker(cakeId) {
+  pickerCake = PRODUCTS.cakes.find(c => c.id === cakeId);
+  pickerChoice = null;
+  document.getElementById('picker-img').src = pickerCake.img;
+  document.getElementById('picker-img').alt = pickerCake.name;
+  document.getElementById('picker-name').textContent = pickerCake.name;
+  document.getElementById('picker-slice-price').textContent = '₱' + pickerCake.price.slice.toFixed(2);
+  document.getElementById('picker-whole-price').textContent = '₱' + pickerCake.price.whole.toFixed(2);
+  document.getElementById('option-slice').classList.remove('selected');
+  document.getElementById('option-whole').classList.remove('selected');
+  document.getElementById('picker-add-btn').disabled = true;
+  document.getElementById('picker-btn-label').textContent = 'Select a size to continue';
+  const overlay = document.getElementById('cake-picker-overlay');
+  overlay.style.opacity = '1'; overlay.style.pointerEvents = 'all';
+  const modal = document.getElementById('cake-picker-modal');
+  modal.style.transform = 'translateY(0) scale(1)'; modal.style.opacity = '1';
+  document.body.style.overflow = 'hidden';
+}
+function closeCakePicker() {
+  const overlay = document.getElementById('cake-picker-overlay');
+  overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+  const modal = document.getElementById('cake-picker-modal');
+  modal.style.transform = 'translateY(28px) scale(0.96)'; modal.style.opacity = '0';
+  document.body.style.overflow = '';
+  pickerCake = null; pickerChoice = null;
+}
+function selectCakeOption(type) {
+  pickerChoice = type;
+  document.getElementById('option-slice').classList.toggle('selected', type === 'slice');
+  document.getElementById('option-whole').classList.toggle('selected', type === 'whole');
+  const price = type === 'slice' ? pickerCake.price.slice : pickerCake.price.whole;
+  const sizeLabel = type === 'slice' ? 'Slice' : 'Whole Cake';
+  document.getElementById('picker-btn-label').textContent = `Add ${sizeLabel} — ₱${price.toFixed(2)}`;
+  document.getElementById('picker-add-btn').disabled = false;
+}
+function confirmCakeAdd() {
+  if (!pickerCake || !pickerChoice) return;
+  const price = pickerChoice === 'slice' ? pickerCake.price.slice : pickerCake.price.whole;
+  const sizeLabel = pickerChoice === 'slice' ? 'Slice' : 'Whole Cake';
+  const cartName = `${pickerCake.name} (${sizeLabel})`;
+  closeCakePicker();
+  addToCart(cartName, price);
+}
+document.getElementById('cake-picker-overlay').addEventListener('click', function(e) { if (e.target === this) closeCakePicker(); });
+
+// ── RENDER CARD ────────────────────────────────────────────
+function makeCard(p, cat) {
+  const badge = p.badge && BADGE_CFG[p.badge]
+    ? `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-bold ${BADGE_CFG[p.badge].cls}">${BADGE_CFG[p.badge].label}</span>`
+    : '<span class="invisible px-2 py-0.5 text-xs">·</span>';
+  const avail = AVAIL_CFG[p.availability] || AVAIL_CFG['in-stock'];
+  const isOOS = p.availability === 'out-of-stock';
+  const div = document.createElement('div');
+  div.className = `product-card bg-surface-container-lowest rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow${isOOS ? ' out-of-stock' : ''}`;
+  div.dataset.cat = cat; div.dataset.name = p.name; div.dataset.id = p.id;
+  let priceDisplay, addButton;
+  if (typeof p.price === 'object' && p.price.slice !== undefined) {
+    div.dataset.price = p.price.slice;
+    priceDisplay = `<div class="cake-price-block"><span class="font-bold text-primary text-lg">₱${p.price.slice.toFixed(2)} <span class="text-xs font-normal text-on-surface-variant">/ slice</span></span><span class="text-xs text-on-surface-variant">₱${p.price.whole.toFixed(2)} whole</span></div>`;
+    addButton = isOOS
+      ? `<span class="flex items-center gap-1 px-3 py-2 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold flex-shrink-0 cursor-not-allowed opacity-60"><span class="material-symbols-outlined text-sm">block</span>Unavailable</span>`
+      : `<button onclick="openCakePicker('${p.id}')" class="flex items-center gap-1.5 px-3 py-2 bg-primary text-on-primary rounded-full text-xs font-bold hover:scale-105 transition-transform flex-shrink-0"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">add_shopping_cart</span>Add</button>`;
+  } else {
+    div.dataset.price = p.price;
+    priceDisplay = `<span class="font-bold text-primary text-lg">₱${p.price.toFixed(2)}</span>`;
+    addButton = isOOS
+      ? `<span class="flex items-center gap-1 px-3 py-2 bg-surface-container text-on-surface-variant rounded-full text-xs font-bold flex-shrink-0 cursor-not-allowed opacity-60"><span class="material-symbols-outlined text-sm">block</span>Unavailable</span>`
+      : `<button onclick="addToCart('${p.name.replace(/'/g,"\\'")}', ${p.price})" class="flex items-center gap-1.5 px-3 py-2 bg-primary text-on-primary rounded-full text-xs font-bold hover:scale-105 transition-transform flex-shrink-0"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">add_shopping_cart</span>Add</button>`;
+  }
+  const oosOverlay = isOOS ? `<div class="oos-overlay"><span class="oos-badge">Out of Stock</span></div>` : '';
+  div.innerHTML = `
+    <div class="card-img-wrap aspect-square bg-surface-container relative">
+      <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy"/>
+      ${oosOverlay}
+    </div>
+    <div class="p-4">
+      <div class="flex items-center justify-between mb-2">
+        ${badge}
+        <div class="flex items-center gap-1"><span class="${avail.dot}"></span><span class="text-xs font-semibold ${avail.cls}">${avail.label}</span></div>
+      </div>
+      <h3 class="font-headline font-bold text-primary text-base leading-tight">${p.name}</h3>
+      <p class="text-xs text-on-surface-variant mt-1 leading-relaxed line-clamp-2">${p.desc}</p>
+      <div class="flex items-center justify-between mt-4 gap-2">${priceDisplay}${addButton}</div>
+    </div>`;
+  return div;
+}
+
+function populateGrids(data) {
+  Object.keys(data).forEach(cat => {
+    const grid = document.getElementById('grid-' + cat);
+    grid.innerHTML = '';
+    data[cat].forEach((p, i) => {
+      const card = makeCard(p, cat);
+      card.style.transitionDelay = (i * 60) + 'ms';
+      grid.appendChild(card);
+    });
+  });
+  requestAnimationFrame(() => { document.querySelectorAll('.product-card').forEach(c => c.classList.add('visible')); });
+}
+
+// ── FILTER / SORT ──────────────────────────────────────────
+let currentCat = 'all', currentSort = 'default', activeSearch = '';
+function filterCat(cat) {
+  currentCat = cat; activeSearch = '';
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.getElementById('tab-' + cat);
+  if (activeTab) activeTab.classList.add('active');
+  ['cookies','brownies','cakes','gifts'].forEach(c => {
+    document.getElementById('section-' + c).style.display = (cat === 'all' || cat === c) ? 'block' : 'none';
+  });
+  document.getElementById('no-results').classList.add('hidden');
+  document.querySelectorAll('.product-card').forEach(c => c.classList.remove('hidden-card'));
+  updateCount();
+  if (cat !== 'all') document.getElementById('section-' + cat)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function updateCount() {
+  let visible = 0;
+  document.querySelectorAll('.product-card').forEach(c => {
+    const sec = c.closest('section');
+    if (sec && sec.style.display !== 'none' && !c.classList.contains('hidden-card')) visible++;
+  });
+  document.getElementById('result-count').textContent = visible + ' item' + (visible !== 1 ? 's' : '');
+}
+function toggleSort() { document.getElementById('sort-dropdown').classList.toggle('hidden'); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('#sort-dropdown') && !e.target.closest('[onclick="toggleSort()"]')) document.getElementById('sort-dropdown').classList.add('hidden');
+});
+document.querySelectorAll('.sort-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentSort = btn.dataset.sort;
+    document.getElementById('sort-label').textContent = btn.textContent.trim();
+    document.getElementById('sort-dropdown').classList.add('hidden');
+    applySort();
+  });
+});
+function applySort() {
+  ['cookies','brownies','cakes','gifts'].forEach(cat => {
+    const grid = document.getElementById('grid-' + cat);
+    const cards = Array.from(grid.children);
+    cards.sort((a, b) => {
+      if (currentSort === 'price-asc') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+      if (currentSort === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+      if (currentSort === 'name') return a.dataset.name.localeCompare(b.dataset.name);
+      return 0;
+    });
+    cards.forEach(c => { c.style.opacity = '0'; c.style.transform = 'translateY(10px)'; });
+    setTimeout(() => {
+      cards.forEach(c => grid.appendChild(c));
+      cards.forEach((c, i) => { c.style.transitionDelay = (i * 40) + 'ms'; requestAnimationFrame(() => { c.style.opacity = '1'; c.style.transform = 'translateY(0)'; }); });
+    }, 180);
+  });
+}
+
+// ── SEARCH ────────────────────────────────────────────────
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  document.getElementById('search-panel').classList.add('open');
+  setTimeout(() => document.getElementById('search-input').focus(), 100);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-panel').classList.remove('open');
+  document.getElementById('search-input').value = '';
+  renderSearchResults('');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !e.target.matches('input,textarea,select')) { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape') closeSearch();
+});
+function onSearchInput(q) { renderSearchResults(q); }
+function onSearchKeydown(e) {
+  if (e.key === 'Enter') { const q = document.getElementById('search-input').value.trim(); if (q) { applySearchFilter(q); closeSearch(); } }
+}
+function renderSearchResults(q) {
+  const container = document.getElementById('search-results');
+  if (!q.trim()) { container.innerHTML = '<p class="text-xs text-on-surface-variant px-4 py-3 text-center opacity-60">Type to search all products…</p>'; return; }
+  const lower = q.toLowerCase();
+  const matches = ALL_PRODUCTS.filter(p => p.name.toLowerCase().includes(lower) || p.desc.toLowerCase().includes(lower));
+  if (!matches.length) { container.innerHTML = `<div class="flex flex-col items-center py-6 text-center"><span class="material-symbols-outlined text-3xl opacity-20 mb-2">search_off</span><p class="text-sm text-on-surface-variant">No products found for "<strong>${q}</strong>"</p></div>`; return; }
+  container.innerHTML = '';
+  matches.forEach(p => {
+    const aInfo = AVAIL_CFG[p.availability] || AVAIL_CFG['in-stock'];
+    const price = typeof p.price === 'object' ? `₱${p.price.slice.toFixed(2)} / slice` : `₱${p.price.toFixed(2)}`;
+    const item = document.createElement('button');
+    item.className = 'search-result-item w-full flex items-center gap-3 px-4 py-3 text-left rounded-lg';
+    item.innerHTML = `<img src="${p.img}" alt="${p.name}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0${p.availability==='out-of-stock'?' grayscale opacity-60':''}"/><div class="flex-1 min-w-0"><p class="text-sm font-bold text-primary truncate">${p.name}</p><p class="text-xs text-on-surface-variant">${price}</p></div><div class="flex items-center gap-1 flex-shrink-0"><span class="${aInfo.dot}"></span><span class="text-xs font-semibold ${aInfo.cls}">${aInfo.label}</span></div>`;
+    item.addEventListener('click', () => { applySearchFilter(p.name); closeSearch(); });
+    container.appendChild(item);
+  });
+  const viewAll = document.createElement('button');
+  viewAll.className = 'w-full px-4 py-3 text-xs font-bold text-[#007bff] hover:bg-surface-container transition-colors flex items-center justify-center gap-1 border-t border-outline-variant';
+  viewAll.innerHTML = `<span class="material-symbols-outlined text-sm">search</span>View all ${matches.length} result${matches.length!==1?'s':''} for "${q}"`;
+  viewAll.addEventListener('click', () => { applySearchFilter(q); closeSearch(); });
+  container.appendChild(viewAll);
+}
+function applySearchFilter(q) {
+  activeSearch = q.toLowerCase();
+  let totalVisible = 0;
+  ['cookies','brownies','cakes','gifts'].forEach(cat => {
+    const sec = document.getElementById('section-' + cat);
+    const cards = Array.from(document.getElementById('grid-' + cat).querySelectorAll('.product-card'));
+    let catVisible = 0;
+    cards.forEach(card => {
+      const name = (card.dataset.name || '').toLowerCase();
+      const matches = name.includes(activeSearch) || card.querySelector('p')?.textContent.toLowerCase().includes(activeSearch);
+      if (matches) { card.classList.remove('hidden-card'); catVisible++; } else { card.classList.add('hidden-card'); }
+    });
+    sec.style.display = catVisible > 0 ? 'block' : 'none';
+    totalVisible += catVisible;
+  });
+  if (totalVisible === 0) { document.getElementById('no-results').classList.remove('hidden'); document.getElementById('no-results-msg').textContent = `No products match "${q}".`; }
+  else { document.getElementById('no-results').classList.add('hidden'); }
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-all').classList.add('active');
+  updateCount();
+  window.scrollTo({ top: 300, behavior: 'smooth' });
+}
+function clearSearch() { activeSearch = ''; filterCat('all'); }
+function initFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('cat');
+  if (cat && ['cookies','brownies','cakes','gifts'].includes(cat)) filterCat(cat);
+  else filterCat('all');
+}
+
+// ── CART ──────────────────────────────────────────────────
+let cart = JSON.parse(localStorage.getItem('crumb-cart') || '[]');
+function saveCart() { localStorage.setItem('crumb-cart', JSON.stringify(cart)); }
+function updateCartBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = total;
+  total > 0 ? badge.classList.replace('hidden','flex') : badge.classList.replace('flex','hidden');
+}
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const empty = document.getElementById('cart-empty');
+  const totalEl = document.getElementById('cart-total');
+  const proceedBtn = document.getElementById('proceed-to-details-btn');
+  Array.from(container.children).forEach(c => { if (c.id !== 'cart-empty') c.remove(); });
+  if (cart.length === 0) { empty.style.display = 'flex'; totalEl.textContent = '₱0.00'; proceedBtn.disabled = true; return; }
+  empty.style.display = 'none'; proceedBtn.disabled = false;
+  let total = 0;
+  cart.forEach((item, idx) => {
+    total += item.price * item.qty;
+    const el = document.createElement('div');
+    el.className = 'flex items-center justify-between gap-3 bg-surface-container rounded-lg p-4';
+    el.innerHTML = `<div class="flex-1 min-w-0"><p class="font-semibold text-primary text-sm truncate">${item.name}</p><p class="text-xs text-on-surface-variant">₱${item.price.toFixed(2)} each</p></div><div class="flex items-center gap-2"><button onclick="changeQty(${idx},-1)" class="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest transition-colors text-primary font-bold text-lg flex items-center justify-center leading-none">−</button><span class="w-5 text-center font-bold text-primary text-sm">${item.qty}</span><button onclick="changeQty(${idx},1)" class="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest transition-colors text-primary font-bold text-lg flex items-center justify-center leading-none">+</button></div><span class="font-bold text-primary text-sm w-14 text-right">₱${(item.price*item.qty).toFixed(2)}</span>`;
+    container.appendChild(el);
+  });
+  totalEl.textContent = '₱' + total.toFixed(2);
+}
+function addToCart(name, price) {
+  const existing = cart.find(i => i.name === name);
+  if (existing) existing.qty++; else cart.push({ name, price, qty: 1 });
+  saveCart(); updateCartBadge(); renderCart();
+  showToast(`${name} added!`);
+}
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  saveCart(); updateCartBadge(); renderCart();
+}
+
+// ── CART STEPS ─────────────────────────────────────────────
+let currentStep = 1, selectedFulfillment = null;
+function goToStep(n) {
+  if (n === 3) { if (!validateStep2()) return; buildReviewScreen(); }
+  const prev = currentStep; currentStep = n;
+  const dir = n > prev ? 'slide-in-right' : 'slide-in-left';
+  [1,2,3,4].forEach(i => document.getElementById('step-'+i).classList.remove('active'));
+  const nextEl = document.getElementById('step-'+n);
+  nextEl.classList.add('active');
+  nextEl.classList.remove('slide-in-right','slide-in-left');
+  void nextEl.offsetWidth;
+  nextEl.classList.add(dir);
+  updatePills(n);
+}
+function updatePills(step) {
+  [1,2,3].forEach(i => {
+    const pill = document.getElementById('pill-'+i);
+    pill.classList.remove('done','current','pending');
+    if (i < step) pill.classList.add('done');
+    else if (i === step) pill.classList.add('current');
+    else pill.classList.add('pending');
+    if (i < step) pill.innerHTML = '<span class="material-symbols-outlined" style="font-size:12px;font-variation-settings:\'FILL\' 1;">check</span>';
+    else pill.textContent = i;
+  });
+}
+function selectFulfillment(type) {
+  selectedFulfillment = type;
+  document.getElementById('fcard-pickup').classList.toggle('selected', type === 'pickup');
+  document.getElementById('fcard-delivery').classList.toggle('selected', type === 'delivery');
+  document.getElementById('pickup-details').classList.toggle('hidden', type !== 'pickup');
+  document.getElementById('delivery-details').classList.toggle('hidden', type !== 'delivery');
+}
+function validateStep2() {
+  let ok = true;
+  const name = document.getElementById('cust-name');
+  const phone = document.getElementById('cust-phone');
+  const date = document.getElementById('cust-date');
+  [name, phone, date].forEach(el => el.classList.remove('error'));
+  if (!name.value.trim()) { name.classList.add('error'); ok = false; }
+  if (!phone.value.trim()) { phone.classList.add('error'); ok = false; }
+  if (!date.value) { date.classList.add('error'); ok = false; }
+  if (!selectedFulfillment) { showToast('Please choose pickup or delivery 🛍️'); ok = false; }
+  if (selectedFulfillment === 'delivery') {
+    const addr = document.getElementById('cust-address');
+    const zone = document.getElementById('cust-zone');
+    addr.classList.remove('error'); zone.classList.remove('error');
+    if (!zone.value) { zone.classList.add('error'); ok = false; }
+    if (!addr.value.trim()) { addr.classList.add('error'); ok = false; }
+  }
+  if (!ok) showToast('Please fill in all required fields ✏️');
+  return ok;
+}
+function buildReviewScreen() {
+  const reviewItems = document.getElementById('review-items');
+  reviewItems.innerHTML = '';
+  let subtotal = 0;
+  cart.forEach(item => {
+    subtotal += item.price * item.qty;
+    const row = document.createElement('div');
+    row.className = 'order-summary-row';
+    row.innerHTML = `<span class="text-sm text-primary font-medium flex-1">${item.name} <span class="text-on-surface-variant font-normal">× ${item.qty}</span></span><span class="text-sm font-bold text-primary flex-shrink-0">₱${(item.price * item.qty).toFixed(2)}</span>`;
+    reviewItems.appendChild(row);
+  });
+  document.getElementById('review-subtotal').textContent = '₱' + subtotal.toFixed(2);
+  const feeRow = document.getElementById('review-delivery-fee-row');
+  const deliveryFee = selectedFulfillment === 'delivery' ? getDeliveryFee() : 0;
+  if (selectedFulfillment === 'delivery') {
+    const zone = document.getElementById('cust-zone').value;
+    document.getElementById('review-zone-label').textContent = '· ' + (ZONE_NAMES[zone] || '');
+    document.getElementById('review-delivery-fee-amount').textContent = '₱' + deliveryFee.toFixed(2);
+    feeRow.classList.remove('hidden'); feeRow.classList.add('flex');
+  } else { feeRow.classList.add('hidden'); feeRow.classList.remove('flex'); }
+  document.getElementById('review-grand-total').textContent = '₱' + (subtotal + deliveryFee).toFixed(2);
+  const email = document.getElementById('cust-email').value.trim();
+  const note = document.getElementById('cust-note').value.trim();
+  document.getElementById('review-customer-info').innerHTML = `
+    <div class="flex gap-2 items-start"><span class="text-xs font-bold text-on-surface-variant w-16 flex-shrink-0 pt-0.5">Name</span><span class="text-sm text-primary font-semibold">${document.getElementById('cust-name').value.trim()}</span></div>
+    <div class="flex gap-2 items-start"><span class="text-xs font-bold text-on-surface-variant w-16 flex-shrink-0 pt-0.5">Phone</span><span class="text-sm text-primary">${document.getElementById('cust-phone').value.trim()}</span></div>
+    ${email ? `<div class="flex gap-2 items-start"><span class="text-xs font-bold text-on-surface-variant w-16 flex-shrink-0 pt-0.5">Email</span><span class="text-sm text-primary">${email}</span></div>` : ''}
+    <div class="flex gap-2 items-start"><span class="text-xs font-bold text-on-surface-variant w-16 flex-shrink-0 pt-0.5">Date</span><span class="text-sm text-primary">${formatDate(document.getElementById('cust-date').value)}</span></div>
+    ${note ? `<div class="flex gap-2 items-start"><span class="text-xs font-bold text-on-surface-variant w-16 flex-shrink-0 pt-0.5">Note</span><span class="text-sm text-primary italic">${note}</span></div>` : ''}`;
+  const fulfillInfo = document.getElementById('review-fulfillment-info');
+  if (selectedFulfillment === 'pickup') {
+    fulfillInfo.innerHTML = `<div class="flex items-center gap-3"><span class="text-2xl">🛍️</span><div><p class="font-bold text-primary text-sm">In-Store Pickup</p><p class="text-xs text-on-surface-variant mt-0.5">Poblacion, Cantilan, Surigao del Sur</p><p class="text-xs text-on-surface-variant">Ready by your selected date · No delivery fee</p></div></div>`;
+  } else {
+    const addr = document.getElementById('cust-address').value.trim();
+    const landmark = document.getElementById('cust-landmark').value.trim();
+    fulfillInfo.innerHTML = `<div class="flex items-start gap-3"><span class="text-2xl mt-0.5">🛵</span><div><p class="font-bold text-primary text-sm">Home Delivery</p><p class="text-xs text-on-surface-variant mt-0.5">${addr}</p>${landmark?`<p class="text-xs text-on-surface-variant">Near: ${landmark}</p>`:''}<p class="text-xs text-secondary mt-1 font-medium">Delivery fee to be confirmed via call/message.</p></div></div>`;
+  }
+}
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-PH', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// ── ZONE / DELIVERY FEE ───────────────────────────────────
+const ZONE_FEES = { zone1: 50, zone2: 80, zone3: 100, zone4: 100, zone5: 150 };
+const ZONE_NAMES = { zone1: 'Zone 1 · Linintian', zone2: 'Zone 2 · Magosilom', zone3: 'Zone 3 · Pag-antayan', zone4: 'Zone 4 · Tapa', zone5: 'Zone 5 · Outside Cantilan' };
+function getDeliveryFee() { const zone = document.getElementById('cust-zone')?.value; return zone ? (ZONE_FEES[zone] || 0) : 0; }
+function onZoneChange() {
+  const zone = document.getElementById('cust-zone').value;
+  const badge = document.getElementById('zone-fee-badge');
+  document.getElementById('cust-zone').classList.remove('error');
+  if (zone && ZONE_FEES[zone] !== undefined) {
+    document.getElementById('zone-fee-amount').textContent = '₱' + ZONE_FEES[zone].toFixed(2);
+    document.getElementById('zone-fee-label').textContent = ZONE_NAMES[zone].split('·')[0].trim();
+    badge.classList.remove('hidden'); badge.classList.add('flex');
+  } else { badge.classList.add('hidden'); badge.classList.remove('flex'); }
+}
+
+// ── PAYMENT SELECTION ──────────────────────────────────────
+let selectedPayment = null;
+function selectPayment(el, value) {
+  selectedPayment = value;
+  document.querySelectorAll('.payment-opt').forEach(e => {
+    e.classList.remove('selected');
+    e.querySelector('.pay-check').classList.add('opacity-0');
+  });
+  el.classList.add('selected');
+  el.querySelector('.pay-check').classList.remove('opacity-0');
+  document.getElementById('payment-warning').classList.add('hidden');
+}
+
+// ── PLACE ORDER ────────────────────────────────────────────
+function placeOrder() {
+  if (!selectedPayment) {
+    document.getElementById('payment-warning').classList.remove('hidden');
+    document.getElementById('payment-options').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (selectedPayment === 'gcash') { openGcashModal(); return; }
+  if (selectedPayment === 'maya') { openMayaModal(); return; }
+  if (selectedPayment === 'bank') { openBankModal(); return; }
+  if (selectedPayment === 'card') { openCardModal(); return; }
+  if (selectedPayment === 'shopeepay') { openShopeeModal(); return; }
+  finalizeOrder({});
+}
+
+// ── FINALIZE ORDER ─────────────────────────────────────────
+function finalizeOrder(extras) {
+  const paymentLabels = {
+    cod: '💵 Cash on Delivery / Pick Up',
+    gcash: '📱 GCash',
+    maya: '🟢 Maya (PayMaya)',
+    card: '💳 Credit / Debit Card',
+    bank: '🏦 Bank Transfer',
+    shopeepay: '🟠 ShopeePay'
+  };
+  const name = document.getElementById('cust-name').value.trim();
+  const fulfillLabel = selectedFulfillment === 'pickup' ? 'In-Store Pickup' : 'Home Delivery';
+  const dateLabel = formatDate(document.getElementById('cust-date').value);
+  const payLabel = paymentLabels[selectedPayment] || selectedPayment;
+  const deliveryFee = selectedFulfillment === 'delivery' ? getDeliveryFee() : 0;
+  const subtotal = cart.reduce((s,i) => s + (i.price * i.qty), 0);
+  const grandTotal = subtotal + deliveryFee;
+  const zone = document.getElementById('cust-zone')?.value;
+  const details = document.getElementById('success-details');
+  details.innerHTML = `
+    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-2">Order Details</p>
+    <div class="flex justify-between text-sm"><span class="text-on-surface-variant">Name</span><span class="font-semibold text-primary">${name}</span></div>
+    <div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Fulfillment</span><span class="font-semibold text-primary">${fulfillLabel}</span></div>
+    ${selectedFulfillment==='delivery'?`<div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Zone</span><span class="font-semibold text-primary">${ZONE_NAMES[zone]||''}</span></div>`:''}
+    <div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Date</span><span class="font-semibold text-primary">${dateLabel}</span></div>
+    <div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Payment</span><span class="font-semibold text-primary">${payLabel}</span></div>
+    ${extras.ref ? `<div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Ref#</span><span class="font-semibold text-primary">${extras.ref}</span></div>` : ''}
+    ${extras.bank ? `<div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Bank</span><span class="font-semibold text-primary">${extras.bank}</span></div>` : ''}
+    ${extras.cardHolder ? `<div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Cardholder</span><span class="font-semibold text-primary">${extras.cardHolder}</span></div>` : ''}
+    <div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Items</span><span class="font-semibold text-primary">${cart.reduce((s,i)=>s+i.qty,0)} item(s)</span></div>
+    <div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Subtotal</span><span class="font-semibold text-primary">₱${subtotal.toFixed(2)}</span></div>
+    ${selectedFulfillment==='delivery'?`<div class="flex justify-between text-sm mt-1"><span class="text-on-surface-variant">Delivery Fee</span><span class="font-semibold text-primary">₱${deliveryFee.toFixed(2)}</span></div>`:''}
+    <div class="flex justify-between text-sm mt-2 pt-2 border-t border-outline-variant"><span class="font-bold text-primary">Total</span><span class="font-black text-primary text-base">₱${grandTotal.toFixed(2)}</span></div>`;
+  document.getElementById('success-msg').textContent =
+    selectedFulfillment === 'delivery'
+      ? `Thank you, ${name}! We'll message you shortly to confirm delivery details.`
+      : `Thank you, ${name}! Your order will be ready for pickup on your chosen date.`;
+
+  // Payment-specific success note
+  const noteEl = document.getElementById('payment-success-note');
+  noteEl.className = 'mt-3 w-full rounded-xl p-3 text-left fade-up';
+  noteEl.style.animationDelay = '0.4s';
+  const proofMethods = ['gcash','maya','bank','shopeepay'];
+  if (proofMethods.includes(selectedPayment)) {
+    const colors = { gcash: '#007bff', maya: '#00b274', bank: '#1a3a5c', shopeepay: '#ee4d2d' };
+    const color = colors[selectedPayment] || '#361f1a';
+    noteEl.style.borderLeft = `3px solid ${color}`;
+    noteEl.style.background = `${color}10`;
+    noteEl.classList.remove('hidden');
+    noteEl.innerHTML = `<p class="text-xs font-bold flex items-center gap-1.5 mb-1" style="color:${color};"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">info</span>Payment Proof Received</p><p class="text-xs text-on-surface-variant">Your screenshot was submitted. We'll confirm once we verify the payment. Thank you!</p>`;
+  } else if (selectedPayment === 'card') {
+    noteEl.style.borderLeft = '3px solid #361f1a';
+    noteEl.style.background = '#361f1a10';
+    noteEl.classList.remove('hidden');
+    noteEl.innerHTML = `<p class="text-xs font-bold text-primary flex items-center gap-1.5 mb-1"><span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">lock</span>Card Payment Submitted</p><p class="text-xs text-on-surface-variant">Your card details have been received. You may receive an OTP for verification. Thank you!</p>`;
+  } else {
+    noteEl.classList.add('hidden');
+  }
+  cart = []; saveCart(); updateCartBadge();
+  goToStep(4);
+}
+
+// ── GCASH MODAL ────────────────────────────────────────────
+let gcashProofFile = null;
+function openGcashModal() {
+  const total = computeTotal();
+  document.getElementById('gcash-amount').textContent = '₱' + total.toFixed(2);
+  document.getElementById('gcash-amount-inline').textContent = '₱' + total.toFixed(2);
+  gcashProofFile = null;
+  document.getElementById('gcash-step-1').classList.remove('hidden');
+  document.getElementById('gcash-step-2').classList.add('hidden');
+  document.getElementById('gcash-ref').value = '';
+  clearUpload(null, 'gcash-silent');
+  document.getElementById('upload-error').classList.add('hidden');
+  updateGcashPills(1);
+  document.getElementById('gcash-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGcash() { document.getElementById('gcash-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function showGcashStep2() { document.getElementById('gcash-step-1').classList.add('hidden'); document.getElementById('gcash-step-2').classList.remove('hidden'); updateGcashPills(2); }
+function backToGcashStep1() { document.getElementById('gcash-step-2').classList.add('hidden'); document.getElementById('gcash-step-1').classList.remove('hidden'); updateGcashPills(1); }
+function updateGcashPills(step) {
+  const p1 = document.getElementById('gcash-pill-1'), p2 = document.getElementById('gcash-pill-2');
+  if (step === 1) {
+    p1.style.background='#e8f0ff'; p1.style.color='#007bff'; p1.querySelector('span').style.background='#007bff'; p1.querySelector('span').style.color='white';
+    p2.style.background=''; p2.style.color=''; p2.className='flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface-variant'; p2.querySelector('span').style.background=''; p2.querySelector('span').style.color='';
+  } else {
+    p1.style.background='#d4edda'; p1.style.color='#00874f'; p2.style.background='#e8f0ff'; p2.style.color='#007bff'; p2.querySelector('span').style.background='#007bff'; p2.querySelector('span').style.color='white';
+  }
+}
+function confirmGcashPayment() {
+  if (!gcashProofFile) { document.getElementById('upload-error').classList.remove('hidden'); return; }
+  const ref = document.getElementById('gcash-ref').value.trim();
+  closeGcash();
+  finalizeOrder({ ref: ref || null });
+}
+document.getElementById('gcash-overlay').addEventListener('click', function(e) { if (e.target === this) closeGcash(); });
+
+// ── MAYA MODAL ─────────────────────────────────────────────
+let mayaProofFile = null;
+function openMayaModal() {
+  const total = computeTotal();
+  document.getElementById('maya-amount').textContent = '₱' + total.toFixed(2);
+  document.getElementById('maya-amount-inline').textContent = '₱' + total.toFixed(2);
+  mayaProofFile = null;
+  document.getElementById('maya-step-1').classList.remove('hidden');
+  document.getElementById('maya-step-2').classList.add('hidden');
+  document.getElementById('maya-ref').value = '';
+  clearUpload(null, 'maya-silent');
+  document.getElementById('maya-upload-error').classList.add('hidden');
+  document.getElementById('maya-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMaya() { document.getElementById('maya-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function showMayaStep2() { document.getElementById('maya-step-1').classList.add('hidden'); document.getElementById('maya-step-2').classList.remove('hidden'); }
+function backToMayaStep1() { document.getElementById('maya-step-2').classList.add('hidden'); document.getElementById('maya-step-1').classList.remove('hidden'); }
+function confirmMayaPayment() {
+  if (!mayaProofFile) { document.getElementById('maya-upload-error').classList.remove('hidden'); return; }
+  const ref = document.getElementById('maya-ref').value.trim();
+  closeMaya(); finalizeOrder({ ref: ref || null });
+}
+document.getElementById('maya-overlay').addEventListener('click', function(e) { if (e.target === this) closeMaya(); });
+
+// ── BANK MODAL ─────────────────────────────────────────────
+let bankProofFile = null;
+function openBankModal() {
+  const total = computeTotal();
+  document.getElementById('bank-amount').textContent = '₱' + total.toFixed(2);
+  document.getElementById('bank-amount-inline').textContent = '₱' + total.toFixed(2);
+  bankProofFile = null;
+  document.getElementById('bank-step-1').classList.remove('hidden');
+  document.getElementById('bank-step-2').classList.add('hidden');
+  document.getElementById('bank-ref').value = '';
+  document.getElementById('bank-name').value = '';
+  clearUpload(null, 'bank-silent');
+  document.getElementById('bank-upload-error').classList.add('hidden');
+  document.getElementById('bank-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeBank() { document.getElementById('bank-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function showBankStep2() { document.getElementById('bank-step-1').classList.add('hidden'); document.getElementById('bank-step-2').classList.remove('hidden'); }
+function backToBankStep1() { document.getElementById('bank-step-2').classList.add('hidden'); document.getElementById('bank-step-1').classList.remove('hidden'); }
+function confirmBankPayment() {
+  if (!bankProofFile) { document.getElementById('bank-upload-error').classList.remove('hidden'); return; }
+  const ref = document.getElementById('bank-ref').value.trim();
+  const bankName = document.getElementById('bank-name').value;
+  closeBank(); finalizeOrder({ ref: ref || null, bank: bankName || null });
+}
+document.getElementById('bank-overlay').addEventListener('click', function(e) { if (e.target === this) closeBank(); });
+
+// ── CARD MODAL ─────────────────────────────────────────────
+function openCardModal() {
+  const total = computeTotal();
+  document.getElementById('card-amount').textContent = '₱' + total.toFixed(2);
+  document.getElementById('card-pay-label').textContent = '₱' + total.toFixed(2);
+  document.getElementById('card-name').value = '';
+  document.getElementById('card-number').value = '';
+  document.getElementById('card-expiry').value = '';
+  document.getElementById('card-cvv').value = '';
+  document.getElementById('card-type').value = '';
+  document.getElementById('card-preview-number').textContent = '•••• •••• •••• ••••';
+  document.getElementById('card-type-label').textContent = 'VISA / MASTERCARD / JCB';
+  document.getElementById('card-error').classList.add('hidden');
+  document.getElementById('card-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCard() { document.getElementById('card-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function formatCardNumber(input) {
+  let val = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = val.replace(/(.{4})/g,'$1 ').trim();
+}
+function formatExpiry(input) {
+  let val = input.value.replace(/\D/g,'').substring(0,4);
+  if (val.length >= 3) val = val.substring(0,2) + ' / ' + val.substring(2);
+  input.value = val;
+}
+function updateCardPreview() {
+  const num = document.getElementById('card-number').value.trim();
+  document.getElementById('card-preview-number').textContent = num || '•••• •••• •••• ••••';
+}
+function onCardTypeChange() {
+  const type = document.getElementById('card-type').value;
+  document.getElementById('card-type-label').textContent = type || 'VISA / MASTERCARD / JCB';
+}
+function confirmCardPayment() {
+  const name = document.getElementById('card-name').value.trim();
+  const num = document.getElementById('card-number').value.replace(/\s/g,'');
+  const exp = document.getElementById('card-expiry').value.trim();
+  const cvv = document.getElementById('card-cvv').value.trim();
+  const errEl = document.getElementById('card-error');
+  const errMsg = document.getElementById('card-error-msg');
+  errEl.classList.add('hidden');
+  if (!name) { errMsg.textContent = 'Please enter the cardholder name.'; errEl.classList.remove('hidden'); return; }
+  if (num.length < 13) { errMsg.textContent = 'Please enter a valid card number.'; errEl.classList.remove('hidden'); return; }
+  if (!exp || exp.length < 7) { errMsg.textContent = 'Please enter a valid expiry date (MM / YY).'; errEl.classList.remove('hidden'); return; }
+  if (!cvv || cvv.length < 3) { errMsg.textContent = 'Please enter your CVV / CVC.'; errEl.classList.remove('hidden'); return; }
+  closeCard();
+  finalizeOrder({ cardHolder: name });
+}
+document.getElementById('card-overlay').addEventListener('click', function(e) { if (e.target === this) closeCard(); });
+
+// ── SHOPEEPAY MODAL ────────────────────────────────────────
+let shopeeProofFile = null;
+function openShopeeModal() {
+  const total = computeTotal();
+  document.getElementById('shopee-amount').textContent = '₱' + total.toFixed(2);
+  document.getElementById('shopee-amount-inline').textContent = '₱' + total.toFixed(2);
+  shopeeProofFile = null;
+  document.getElementById('shopee-step-1').classList.remove('hidden');
+  document.getElementById('shopee-step-2').classList.add('hidden');
+  document.getElementById('shopee-ref').value = '';
+  clearUpload(null, 'shopee-silent');
+  document.getElementById('shopee-upload-error').classList.add('hidden');
+  document.getElementById('shopee-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeShopee() { document.getElementById('shopee-overlay').classList.remove('open'); document.body.style.overflow = ''; }
+function showShopeeStep2() { document.getElementById('shopee-step-1').classList.add('hidden'); document.getElementById('shopee-step-2').classList.remove('hidden'); }
+function backToShopeeStep1() { document.getElementById('shopee-step-2').classList.add('hidden'); document.getElementById('shopee-step-1').classList.remove('hidden'); }
+function confirmShopeePayment() {
+  if (!shopeeProofFile) { document.getElementById('shopee-upload-error').classList.remove('hidden'); return; }
+  const ref = document.getElementById('shopee-ref').value.trim();
+  closeShopee(); finalizeOrder({ ref: ref || null });
+}
+document.getElementById('shopee-overlay').addEventListener('click', function(e) { if (e.target === this) closeShopee(); });
+
+// ── SHARED HELPERS ─────────────────────────────────────────
+function computeTotal() {
+  const subtotal = cart.reduce((s,i) => s + (i.price * i.qty), 0);
+  return subtotal + (selectedFulfillment === 'delivery' ? getDeliveryFee() : 0);
+}
+
+function copyNumber(num, iconId) {
+  navigator.clipboard.writeText(num).then(() => {
+    const icon = document.getElementById(iconId);
+    icon.textContent = 'check'; icon.style.color = '#00b274';
+    setTimeout(() => { icon.textContent = 'content_copy'; icon.style.color = ''; }, 2000);
+  });
+}
+function copyGcashNumber() { copyNumber('09123456789', 'copy-icon'); }
+
+// File handlers — keyed by prefix
+const proofFiles = { gcash: null, maya: null, bank: null, shopee: null };
+
+function onFileSelected(input, prefix) {
+  if (input.files && input.files[0]) handleFile(input.files[0], prefix);
+}
+function onDragOver(e, zoneId) { e.preventDefault(); document.getElementById(zoneId).classList.add('drag-over'); }
+function onDragLeave(e, zoneId) { document.getElementById(zoneId).classList.remove('drag-over'); }
+function onFileDrop(e, prefix) {
+  e.preventDefault();
+  const zoneId = prefix + '-upload-zone';
+  document.getElementById(zoneId)?.classList.remove('drag-over');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0], prefix);
+}
+function handleFile(file, prefix) {
+  if (!file.type.startsWith('image/')) { showToast('Please upload an image file.'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('File is too large (max 10MB).'); return; }
+  proofFiles[prefix] = file;
+  // Legacy compat for gcash
+  if (prefix === 'gcash') gcashProofFile = file;
+  if (prefix === 'maya') mayaProofFile = file;
+  if (prefix === 'bank') bankProofFile = file;
+  if (prefix === 'shopee') shopeeProofFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const isGcash = prefix === 'gcash';
+    const placeholderId = isGcash ? 'upload-placeholder' : `${prefix}-upload-placeholder`;
+    const previewId = isGcash ? 'upload-preview' : `${prefix}-upload-preview`;
+    const imgId = isGcash ? 'proof-preview-img' : `${prefix}-proof-preview-img`;
+    const filenameId = isGcash ? 'upload-filename' : `${prefix}-upload-filename`;
+    const zoneId = isGcash ? 'upload-zone' : `${prefix}-upload-zone`;
+    const errId = isGcash ? 'upload-error' : `${prefix}-upload-error`;
+    document.getElementById(imgId).src = e.target.result;
+    document.getElementById(filenameId).textContent = file.name;
+    document.getElementById(placeholderId).classList.add('hidden');
+    document.getElementById(previewId).classList.remove('hidden');
+    document.getElementById(previewId).classList.add('flex');
+    document.getElementById(zoneId).classList.add('has-file');
+    document.getElementById(errId).classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+function clearUpload(e, prefix) {
+  if (e) e.stopPropagation();
+  const isSilent = typeof prefix === 'string' && prefix.endsWith('-silent');
+  const realPrefix = isSilent ? prefix.replace('-silent','') : prefix;
+  proofFiles[realPrefix] = null;
+  if (realPrefix === 'gcash') gcashProofFile = null;
+  if (realPrefix === 'maya') mayaProofFile = null;
+  if (realPrefix === 'bank') bankProofFile = null;
+  if (realPrefix === 'shopee') shopeeProofFile = null;
+  const isGcash = realPrefix === 'gcash';
+  const fileInputId = isGcash ? 'gcash-file-input' : `${realPrefix}-file-input`;
+  const placeholderId = isGcash ? 'upload-placeholder' : `${realPrefix}-upload-placeholder`;
+  const previewId = isGcash ? 'upload-preview' : `${realPrefix}-upload-preview`;
+  const imgId = isGcash ? 'proof-preview-img' : `${realPrefix}-proof-preview-img`;
+  const zoneId = isGcash ? 'upload-zone' : `${realPrefix}-upload-zone`;
+  const fileInputEl = document.getElementById(fileInputId);
+  const imgEl = document.getElementById(imgId);
+  const zoneEl = document.getElementById(zoneId);
+  const placeholderEl = document.getElementById(placeholderId);
+  const previewEl = document.getElementById(previewId);
+  if (fileInputEl) fileInputEl.value = '';
+  if (imgEl) imgEl.src = '';
+  if (placeholderEl) placeholderEl.classList.remove('hidden');
+  if (previewEl) { previewEl.classList.add('hidden'); previewEl.classList.remove('flex'); }
+  if (zoneEl) zoneEl.classList.remove('has-file','drag-over');
+}
+
+// ── OPEN / CLOSE CART ──────────────────────────────────────
+function openCart() {
+  renderCart();
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeCartAndReset() {
+  closeCart();
+  setTimeout(() => {
+    selectedFulfillment = null; selectedPayment = null;
+    Object.keys(proofFiles).forEach(k => proofFiles[k] = null);
+    gcashProofFile = null; mayaProofFile = null; bankProofFile = null; shopeeProofFile = null;
+    document.querySelectorAll('.payment-opt').forEach(el => { el.classList.remove('selected'); el.querySelector('.pay-check').classList.add('opacity-0'); });
+    ['cust-name','cust-phone','cust-email','cust-note','cust-address','cust-landmark'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('cust-date').value = '';
+    document.getElementById('cust-zone').value = '';
+    document.getElementById('zone-fee-badge').classList.add('hidden');
+    document.getElementById('zone-fee-badge').classList.remove('flex');
+    document.getElementById('fcard-pickup').classList.remove('selected');
+    document.getElementById('fcard-delivery').classList.remove('selected');
+    document.getElementById('pickup-details').classList.add('hidden');
+    document.getElementById('delivery-details').classList.add('hidden');
+    currentStep = 1;
+    [1,2,3,4].forEach(i => document.getElementById('step-'+i).classList.remove('active'));
+    document.getElementById('step-1').classList.add('active');
+    updatePills(1);
+    renderCart();
+  }, 350);
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
+window.addEventListener('scroll', () => { document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20); });
+
+// ── INIT ───────────────────────────────────────────────────
+populateGrids(PRODUCTS);
+updateCartBadge();
+initFromURL();
+document.getElementById('cust-date').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

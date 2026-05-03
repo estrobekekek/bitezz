@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BITEZ — Artisanal Confections</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface-bright": "#fafaf5",
+          "surface-container-low": "#f4f4ef",
+          "surface-container-lowest": "#ffffff",
+          "on-surface": "#1a1c19",
+          "secondary": "#6f5a52",
+          "on-surface-variant": "#504442",
+          "surface-tint": "#755750",
+          "surface-dim": "#dadad5",
+          "inverse-surface": "#2f312e",
+          "on-error-container": "#93000a",
+          "tertiary-fixed-dim": "#cfc4c0",
+          "on-secondary-fixed-variant": "#56423b",
+          "on-secondary-fixed": "#271812",
+          "outline-variant": "#d4c3bf",
+          "on-secondary": "#ffffff",
+          "on-tertiary-fixed": "#201a18",
+          "on-tertiary-fixed-variant": "#4c4542",
+          "on-secondary-container": "#766057",
+          "secondary-fixed": "#fadcd2",
+          "on-error": "#ffffff",
+          "on-primary-fixed-variant": "#5c403a",
+          "on-tertiary-container": "#aca29f",
+          "background": "#fafaf5",
+          "primary-fixed-dim": "#e5beb5",
+          "on-primary-container": "#c19c94",
+          "outline": "#827471",
+          "on-tertiary": "#ffffff",
+          "on-primary": "#ffffff",
+          "primary": "#361f1a",
+          "error": "#ba1a1a",
+          "surface-container-highest": "#e3e3de",
+          "inverse-on-surface": "#f1f1ec",
+          "on-primary-fixed": "#2b1611",
+          "secondary-container": "#fadcd2",
+          "surface": "#fafaf5",
+          "surface-variant": "#e3e3de",
+          "error-container": "#ffdad6",
+          "on-background": "#1a1c19",
+          "inverse-primary": "#e5beb5",
+          "surface-container-high": "#e8e8e3",
+          "surface-container": "#eeeee9",
+          "primary-fixed": "#ffdad2",
+          "tertiary": "#292421",
+          "secondary-fixed-dim": "#ddc1b7",
+          "tertiary-fixed": "#ece0dc",
+          "primary-container": "#4e342e",
+          "tertiary-container": "#403936"
+        },
+        fontFamily: {
+          "headline": ["Noto Serif"],
+          "body": ["Plus Jakarta Sans"],
+          "label": ["Plus Jakarta Sans"]
+        },
+        borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+      },
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .text-shadow-subtle { text-shadow: 0 2px 4px rgba(54,31,26,0.1); }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Cart drawer */
+  #cart-drawer {
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #cart-drawer.open { transform: translateX(0); }
+  #cart-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  #cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  /* Mobile menu */
+  #mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #mobile-menu.open { max-height: 300px; }
+
+  /* Nav scroll effect */
+  nav.scrolled { box-shadow: 0 4px 24px rgba(54,31,26,0.10); }
+
+  /* Toast */
+  #toast {
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Carousel arrows */
+  .carousel-btn:hover { background: #361f1a; color: white; }
+  .carousel-btn { transition: background 0.2s, color 0.2s; }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Hero badge pulse */
+  @keyframes badge-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(111,90,82,0.3); }
+    50% { box-shadow: 0 0 0 8px rgba(111,90,82,0); }
+  }
+  .badge-pulse { animation: badge-pulse 2.5s ease-in-out infinite; }
+</style>
+</head>
+<body class="bg-surface font-body text-on-surface-variant overflow-x-hidden">
+
+<!-- Cart Overlay -->
+<div id="cart-overlay" class="fixed inset-0 bg-black/40 z-40" onclick="closeCart()"></div>
+
+<!-- Cart Drawer -->
+<div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-sm bg-surface-container-lowest z-50 shadow-2xl flex flex-col">
+  <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant">
+    <h2 class="font-headline text-xl font-bold text-primary">Your Box</h2>
+    <button onclick="closeCart()" class="p-2 rounded-full hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined text-primary">close</span>
+    </button>
+  </div>
+  <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+    <div id="cart-empty" class="flex flex-col items-center justify-center h-48 text-on-surface-variant">
+      <span class="material-symbols-outlined text-5xl opacity-30 mb-3">shopping_bag</span>
+      <p class="text-sm">Your box is empty.</p>
+      <p class="text-xs mt-1 opacity-60">Add some delicious cookies!</p>
+    </div>
+  </div>
+  <div class="px-6 py-5 border-t border-outline-variant space-y-4">
+    <div class="flex justify-between items-center">
+      <span class="font-bold text-primary">Subtotal</span>
+      <span id="cart-total" class="font-bold text-primary text-lg">$0.00</span>
+    </div>
+    <button onclick="checkout()" class="w-full py-4 bg-primary text-on-primary rounded-full font-bold text-lg hover:scale-[1.02] transition-transform shadow-lg">
+      Checkout
+    </button>
+    <button onclick="closeCart()" class="w-full py-3 bg-surface-container text-primary rounded-full font-semibold text-sm hover:bg-surface-container-high transition-colors">
+      Continue Shopping
+    </button>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-primary text-on-primary px-6 py-3 rounded-full shadow-xl font-semibold text-sm flex items-center gap-2">
+  <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">check_circle</span>
+  <span id="toast-msg">Added to box!</span>
+</div>
+
+<!-- TOP NAV -->
+<nav id="main-nav" class="fixed top-0 w-full z-30 bg-[#fafaf5]/80 backdrop-blur-md transition-shadow duration-300">
+  <div class="flex justify-between items-center w-full px-6 lg:px-8 py-4 max-w-7xl mx-auto">
+    <a href="index.html" class="text-2xl font-['Noto_Serif'] italic font-black text-[#361f1a] hover:opacity-80 transition-opacity">BITEZ</a>
+
+    <!-- Desktop Nav -->
+    <div class="hidden md:flex gap-8 items-center">
+      <a href="#shop" class="text-[#361f1a] border-b-2 border-[#361f1a] pb-1 font-['Noto_Serif'] font-bold tracking-tight scale-105 transition-all duration-200 hover:opacity-80" onclick="smoothTo(event,'#shop')">Shop</a>
+      <a href="#best-sellers" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight hover:border-b-2 hover:border-[#361f1a] pb-1" onclick="smoothTo(event,'#best-sellers')">Best Sellers</a>
+      <a href="#categories" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight hover:border-b-2 hover:border-[#361f1a] pb-1" onclick="smoothTo(event,'#categories')">Categories</a>
+      <a href="#our-story" class="text-[#504442] hover:text-[#361f1a] transition-colors duration-300 font-['Noto_Serif'] font-bold tracking-tight hover:border-b-2 hover:border-[#361f1a] pb-1" onclick="smoothTo(event,'#our-story')">Our Story</a>
+    </div>
+
+    <div class="flex items-center gap-4 text-[#361f1a]">
+      <!-- Cart button with badge -->
+      <button onclick="openCart()" class="relative scale-105 transition-transform duration-200 hover:scale-110">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-secondary text-white text-[10px] font-bold rounded-full hidden items-center justify-center">0</span>
+      </button>
+      <!-- Hamburger (mobile) -->
+      <button id="menu-btn" class="md:hidden p-1" onclick="toggleMenu()">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden bg-[#fafaf5]/95 backdrop-blur-md border-t border-outline-variant/30">
+    <div class="flex flex-col px-6 py-4 gap-4">
+      <a href="#shop" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30" onclick="smoothTo(event,'#shop');toggleMenu()">Shop</a>
+      <a href="#best-sellers" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30" onclick="smoothTo(event,'#best-sellers');toggleMenu()">Best Sellers</a>
+      <a href="#categories" class="font-['Noto_Serif'] font-bold text-primary py-2 border-b border-outline-variant/30" onclick="smoothTo(event,'#categories');toggleMenu()">Categories</a>
+      <a href="#our-story" class="font-['Noto_Serif'] font-bold text-primary py-2" onclick="smoothTo(event,'#our-story');toggleMenu()">Our Story</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="shop" class="relative pt-32 pb-20 px-8 flex flex-col items-center justify-center overflow-hidden">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
+    <div class="space-y-8 reveal">
+      <span class="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-fixed-variant font-medium text-sm tracking-wide badge-pulse">Fresh from the Oven</span>
+      <h1 class="font-headline text-6xl md:text-8xl font-black text-primary leading-tight tracking-tight">
+        Heavenly <span class="italic text-secondary">Lil'</span> Bites.
+      </h1>
+      <p class="text-xl text-on-surface-variant max-w-lg leading-relaxed">
+        Crafting memories through small-batch confections. Our cookies are hand-rolled, double-baked, and filled with love.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="shop.html" class="px-10 py-4 bg-primary text-on-primary rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-lg inline-block">Shop Now</a>
+        <button onclick="smoothTo(event,'#our-story')" class="px-10 py-4 bg-surface-container-high text-primary rounded-full font-bold text-lg hover:bg-surface-container-highest transition-colors">Our Story</button>
+      </div>
+    </div>
+    <div class="relative reveal" style="transition-delay:0.15s">
+      <div class="relative z-10 rounded-xl overflow-hidden rotate-3 shadow-2xl">
+        <img class="w-full h-[500px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBab1DFSDAVg7fY3s4bhlTDUhojkAs1iRrvXjhBsugY8Twc0igUwiOcA4BgYw3YLgE1qQzTXF3Is0M0pcj67TuIiBsnaVIf0lGSQwIo9HEVkEizTNpa37J77nBMIc8C9CdmGVYwfmkzyLlVtYPtMNr9ezhbHi74BPohk96xk1_07SIL5fwqQ-D3MPAuezWA48f34BnpQZt8p5DJ2gcW5Ipyhq2aKL2SoBXfGCCLiIfPDB96uLnlaYyjLesDcXBAJw7gM3a9FSm55wc" alt="Stack of thick chocolate chip cookies"/>
+      </div>
+      <div class="absolute -top-10 -left-10 w-32 h-32 bg-secondary-container rounded-full blur-3xl opacity-60"></div>
+      <div class="absolute -bottom-10 -right-10 w-48 h-48 bg-primary-container/20 rounded-full blur-3xl opacity-60"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNATURE COLLECTION -->
+<section class="py-24 px-8 bg-surface-container-low">
+  <div class="max-w-7xl mx-auto">
+    <div class="mb-16 reveal">
+      <h2 class="font-headline text-4xl font-bold text-primary mb-4">The Signature Collection</h2>
+      <p class="font-body text-on-surface-variant">Handpicked favorites that define our craft.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Large Card -->
+      <div class="md:col-span-2 group overflow-hidden rounded-lg bg-surface-container-lowest transition-all hover:scale-[1.01] hover:shadow-xl reveal">
+        <div class="grid md:grid-cols-2 h-full min-h-[400px]">
+          <div class="p-8 md:p-12 flex flex-col justify-center">
+            <span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">New Arrival</span>
+            <h3 class="font-headline text-3xl md:text-4xl font-bold text-primary mt-6">Midnight Truffle Cookie</h3>
+            <p class="text-on-surface-variant mt-4 text-lg leading-relaxed">Double dark cocoa dough with a molten lava white chocolate center.</p>
+            <button onclick="addToCart('Midnight Truffle Cookie', 12.00)" class="mt-8 font-bold text-primary underline underline-offset-8 decoration-2 self-start hover:text-secondary transition-colors">Add to Box</button>
+          </div>
+          <div class="relative h-64 md:h-auto overflow-hidden">
+            <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXMf2f0RBgCNSe0qw6pQOoQfPpqkc0HjiUhtBfSO8cOKTc5RMyztKvxylcUlg8EaIIKJu7EMbVb_Z9leCE-X69gYdCEWczay3F14mPcxDC2Q6vUrFgOPSkS4pkfob6IWVusCROWutVgctjvbExY6eSeJG6cNC-FsiIJkAf5evEoKHvC1FgCfjsjHul4AnCRlopfHEuV8mRP1OMAephE1mkKvTcJ-UsK7WqPXeyUTFmzzA93nJzqAbdzsTMjqyL8eOynUEM0KgOH9I" alt="Dark chocolate cookie"/>
+          </div>
+        </div>
+      </div>
+      <!-- Tall Card -->
+      <div class="group overflow-hidden rounded-lg bg-surface-container-lowest transition-all hover:scale-[1.01] hover:shadow-xl reveal" style="transition-delay:0.1s">
+        <div class="aspect-[4/5] overflow-hidden">
+          <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://i.pinimg.com/736x/3a/3f/34/3a3f34edca676536dff3945be39d2024.jpg" alt="Sampler box"/>
+        </div>
+        <div class="p-8">
+          <h3 class="font-headline text-xl font-bold text-primary">The Sampler Box</h3>
+          <p class="text-sm text-on-surface-variant mt-2">12 cookies featuring every flavor in our seasonal rotation.</p>
+          <div class="flex items-center justify-between mt-4">
+            <p class="font-bold text-primary text-xl">$399.00</p>
+            <button onclick="addToCart('The Sampler Box', 399.00)" class="px-4 py-2 bg-primary text-on-primary rounded-full text-sm font-semibold hover:scale-105 transition-transform">Add to Box</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEST SELLERS CAROUSEL -->
+<section id="best-sellers" class="py-24 px-8 overflow-hidden">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-end mb-12 reveal">
+      <div>
+        <h2 class="font-headline text-4xl font-bold text-primary mb-4">Crumb Favorites</h2>
+        <p class="font-body text-on-surface-variant">The flavors our customers can't get enough of.</p>
+      </div>
+      <div class="flex gap-4">
+        <button class="carousel-btn p-3 rounded-full bg-surface-container border border-outline-variant hover:bg-surface-container-high transition-colors" onclick="scrollCarousel(-1)">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button class="carousel-btn p-3 rounded-full bg-surface-container border border-outline-variant hover:bg-surface-container-high transition-colors" onclick="scrollCarousel(1)">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </div>
+    <div id="carousel" class="flex gap-8 overflow-x-auto pb-12 snap-x no-scrollbar scroll-smooth">
+      <!-- Card 1 -->
+      <div class="min-w-[300px] snap-start group reveal">
+        <div class="rounded-lg overflow-hidden aspect-square mb-6 bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCThA5RQ1p2yklqzM082Ul-rlTitis404YB9QEBrS9fvybTb9kDo_GNDFZIpMZnE8RnwdO6hz-X-7lrYf6622hfCg06l26JIsEqpwQT0yAWYexFw1hfJ6mSBwByfcGyGC46jA5A9AwHOjFYwy9AinKthZ0JZRQn1hX4Y0KVPTLSPlx5UO97VkdxfR1dLodEFLp3c-G3iyCaDYKD3oCP97S0nN1_pUfgT7ez-FhxV_zQRXT6Ky7BzAQxySiE1mMigr-nhu0Axj9k_FE" alt="Salted Macadamia"/>
+        </div>
+        <h4 class="font-headline text-xl font-bold text-primary">Salted Macadamia</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Buttery, crunchy, and perfectly salty.</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-bold text-primary">₱25.00</span>
+          <button onclick="addToCart('Salted Macadamia',25.00)" class="text-xs font-semibold text-secondary underline underline-offset-4 hover:text-primary transition-colors">Add to Box</button>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="min-w-[300px] snap-start group reveal" style="transition-delay:0.05s">
+        <div class="rounded-lg overflow-hidden aspect-square mb-6 bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://mealsnrecipes.com/wp-content/uploads/2025/04/Classic20Spiced20Ginger20Cookies2028Guaranteed20Soft202620Chewy2129_featured_b64.jpg" alt="Spiced Ginger"/>
+        </div>
+        <h4 class="font-headline text-xl font-bold text-primary">Spiced Ginger</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Warm molasses and fresh ground ginger.</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-bold text-primary">₱25.00</span>
+          <button onclick="addToCart('Spiced Ginger',25.00)" class="text-xs font-semibold text-secondary underline underline-offset-4 hover:text-primary transition-colors">Add to Box</button>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="min-w-[300px] snap-start group reveal" style="transition-delay:0.1s">
+        <div class="rounded-lg overflow-hidden aspect-square mb-6 bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://meal.viralestories.com/wp-content/uploads/2025/12/593592717_122231403530102037_2890259125030748409_n.jpg" alt="Blueberry Crumb"/>
+        </div>
+        <h4 class="font-headline text-xl font-bold text-primary">Blueberry Crumb</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Real berries with a streusel finish.</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-bold text-primary">₱40.00</span>
+          <button onclick="addToCart('Blueberry Crumb',40.00)" class="text-xs font-semibold text-secondary underline underline-offset-4 hover:text-primary transition-colors">Add to Box</button>
+        </div>
+      </div>
+      <!-- Card 4 -->
+      <div class="min-w-[300px] snap-start group reveal" style="transition-delay:0.15s">
+        <div class="rounded-lg overflow-hidden aspect-square mb-6 bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://flavorfulkitchenn.com/wp-content/uploads/2026/01/workssttaa_httpss.mj_.runU70ZS0yQOrk_Chewy_Oatmeal_Raisin_Cook_177802f2-3e1f-466f-99a9-a188eac1f19d_3.png" alt="Classic Oatmeal"/>
+        </div>
+        <h4 class="font-headline text-xl font-bold text-primary">Classic Oatmeal</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Hearty oats and sun-dried raisins.</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-bold text-primary">₱25.00</span>
+          <button onclick="addToCart('Classic Oatmeal',25.00)" class="text-xs font-semibold text-secondary underline underline-offset-4 hover:text-primary transition-colors">Add to Box</button>
+        </div>
+      </div>
+      <!-- Card 5 (bonus) -->
+      <div class="min-w-[300px] snap-start group reveal" style="transition-delay:0.2s">
+        <div class="rounded-lg overflow-hidden aspect-square mb-6 bg-surface-container">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXMf2f0RBgCNSe0qw6pQOoQfPpqkc0HjiUhtBfSO8cOKTc5RMyztKvxylcUlg8EaIIKJu7EMbVb_Z9leCE-X69gYdCEWczay3F14mPcxDC2Q6vUrFgOPSkS4pkfob6IWVusCROWutVgctjvbExY6eSeJG6cNC-FsiIJkAf5evEoKHvC1FgCfjsjHul4AnCRlopfHEuV8mRP1OMAephE1mkKvTcJ-UsK7WqPXeyUTFmzzA93nJzqAbdzsTMjqyL8eOynUEM0KgOH9I" alt="Midnight Truffle"/>
+        </div>
+        <h4 class="font-headline text-xl font-bold text-primary">Midnight Truffle</h4>
+        <p class="text-on-surface-variant text-sm mt-1">Double dark cocoa, molten white choc center.</p>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-bold text-primary">₱s35.00</span>
+          <button onclick="addToCart('Midnight Truffle',35.00)" class="text-xs font-semibold text-secondary underline underline-offset-4 hover:text-primary transition-colors">Add to Box</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUR STORY -->
+<section id="our-story" class="py-24 px-8 bg-surface-container">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+    <div class="relative reveal">
+      <div class="aspect-[3/4] rounded-lg overflow-hidden relative z-10">
+        <img class="w-full h-full object-cover" src="https://i.pinimg.com/1200x/62/68/1d/62681d0ff9dd40579bc7db750e7c6938.jpg" alt="Baker in kitchen"/>
+      </div>
+      <div class="absolute -bottom-8 -right-8 w-64 h-64 bg-secondary-container rounded-lg -z-0"></div>
+      <div class="absolute top-12 -left-8 p-6 bg-surface-container-lowest rounded-lg shadow-xl z-20 hidden lg:block">
+        <p class="font-headline text-2xl italic text-primary">"Born from a small kitchen, baked for the world."</p>
+      </div>
+    </div>
+    <div class="space-y-8 reveal" style="transition-delay:0.1s">
+      <h2 class="font-headline text-5xl font-bold text-primary leading-tight">Our story started with a single <span class="text-secondary italic">perfect</span> recipe.</h2>
+      <p class="text-lg leading-relaxed text-on-surface-variant">
+        Founder Kai spent three years perfecting the ratio of butter to brown sugar. What started as a Saturday market stall in Cortes has grown into BITEZ, but our philosophy remains the same:
+      </p>
+      <ul class="space-y-6">
+        <li class="flex items-start gap-4">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">eco</span>
+          <div>
+            <p class="font-bold text-primary">Ethically Sourced Cocoa</p>
+            <p class="text-sm">We partner directly with farmers in Cortes for the richest chocolate.</p>
+          </div>
+        </li>
+        <li class="flex items-start gap-4">
+          <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">temp_preferences_custom</span>
+          <div>
+            <p class="font-bold text-primary">Small Batch Perfection</p>
+            <p class="text-sm">Never mass-produced. Every batch is tasted and tested for crumb perfection.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="categories" class="py-24 px-8">
+  <div class="max-w-7xl mx-auto">
+    <h2 class="font-headline text-4xl font-bold text-primary mb-16 text-center reveal">Shop by Craving</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <a href="shop.html?cat=cookies" class="group block relative aspect-square rounded-lg overflow-hidden bg-primary reveal">
+        <img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5Bp0f2w8iqcha54SJi_kTR1kT9prugIR6u295egC13aV5edWBUEzYUNd_3jVpZ9ymEQ7TE23MnFYoULKq61KXwW-h9ejhso3zdG-_DB4-hw3kpUHhEETorPdTb3HnY26_l4P5DV69C1LczltWvRlaJTAsBOGQX7I2s9xBl0X9Z-M27cR78tUhQKi1DsGilayOEkyDLRq-u8qX-dd1NLgcEOupyqHO0YFc5QZk2mDLxiWUS8JJnn1ALkbEtTJhwmSu9R7o21iPVC0" alt="Cookies"/>
+        <div class="absolute inset-0 flex items-center justify-center"><span class="font-headline text-3xl font-bold text-white text-shadow-subtle">Cookies</span></div>
+      </a>
+      <a href="shop.html?cat=brownies" class="group block relative aspect-square rounded-lg overflow-hidden bg-primary reveal" style="transition-delay:0.05s">
+        <img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAS1BmligWOhm3FCHtO4-mYKyyrjvfe5rJXTsIs361jiwOxumOZHE33Xxhji9myL0hBkCeI5ZJPdMa81TAXeD0lT1BxiNeEuaVt5pmQwPU0KEbq-UDGqZoFyPLyiA_M9SxSdR4iRG0IoSwmBvse0SzqMqiDnmM2EssN7L1zODbRxZ-alokFVuu6fLrBRibXUeyhU6bQAdnLet4QcoLgDfSPOTd63S6iOCnSFEm0PuVJ0SEHHLyVLvk3bAEK9uGfQWgMN2zOUf2HADE" alt="Brownies"/>
+        <div class="absolute inset-0 flex items-center justify-center"><span class="font-headline text-3xl font-bold text-white text-shadow-subtle">Brownies</span></div>
+      </a>
+      <a href="shop.html?cat=cakes" class="group block relative aspect-square rounded-lg overflow-hidden bg-primary reveal" style="transition-delay:0.1s">
+        <img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" src="https://alpineella.com/wp-content/uploads/2023/03/featured-image-triple-chocolate-layer-cake.jpg" alt="Cakes"/>
+        <div class="absolute inset-0 flex items-center justify-center"><span class="font-headline text-3xl font-bold text-white text-shadow-subtle">Cakes</span></div>
+      </a>
+      <a href="shop.html?cat=gifts" class="group block relative aspect-square rounded-lg overflow-hidden bg-primary reveal" style="transition-delay:0.15s">
+        <img class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" src="https://i.pinimg.com/736x/f8/b1/2e/f8b12eaa75547f60ccdedd4a88a6bd34.jpg" alt="Gifts"/>
+        <div class="absolute inset-0 flex items-center justify-center"><span class="font-headline text-3xl font-bold text-white text-shadow-subtle">Gifts</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="py-24 px-8 bg-surface-container-low">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="bg-surface-container-lowest p-10 rounded-lg shadow-sm reveal">
+        <div class="flex text-secondary mb-6">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+        </div>
+        <p class="italic text-lg text-primary mb-8 font-headline">"The Midnight Truffle is literally a religious experience. I've never had a cookie this rich and soft."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center font-bold text-secondary">SJ</div>
+          <div><p class="font-bold text-primary">Sarah J.</p><p class="text-xs uppercase tracking-widest opacity-60">Verified Buyer</p></div>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-10 rounded-lg shadow-sm mt-8 md:mt-16 reveal" style="transition-delay:0.1s">
+        <div class="flex text-secondary mb-6">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+        </div>
+        <p class="italic text-lg text-primary mb-8 font-headline">"Perfect for gifts. The packaging is as beautiful as the cookies taste. Highly recommend the sampler box."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center font-bold text-secondary">MR</div>
+          <div><p class="font-bold text-primary">Mark R.</p><p class="text-xs uppercase tracking-widest opacity-60">Verified Buyer</p></div>
+        </div>
+      </div>
+      <div class="bg-surface-container-lowest p-10 rounded-lg shadow-sm reveal" style="transition-delay:0.2s">
+        <div class="flex text-secondary mb-6">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+        </div>
+        <p class="italic text-lg text-primary mb-8 font-headline">"They arrived fresh and still soft in California! Best online ordering experience I've had yet."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center font-bold text-secondary">EW</div>
+          <div><p class="font-bold text-primary">Elena W.</p><p class="text-xs uppercase tracking-widest opacity-60">Verified Buyer</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM GALLERY -->
+<section class="py-24 px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="font-headline text-4xl font-bold text-primary mb-4">Follow the BITEZ</h2>
+      <p class="font-body text-on-surface-variant">@BITEZZZ on Instagram</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div class="aspect-square rounded-lg overflow-hidden group reveal"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://jowelrecipes.com/wp-content/uploads/2025/03/image_fx_-2025-03-23T030133.431-1024x559.png" alt=""/></div>
+      <div class="aspect-square rounded-lg overflow-hidden group reveal" style="transition-delay:0.05s"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://www.sarahsloft.com/image/cache/catalog/All%20Cake%20Photos/Ala%20Carte%20Desserts/7.%20Salted%20Caramel%20Dark%20Chocolate%20Brownies-3000x4000.jpg" alt=""/></div>
+      <div class="aspect-square rounded-lg overflow-hidden group reveal" style="transition-delay:0.1s"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://teakandthyme.com/wp-content/uploads/2023/09/matcha-white-chocolate-cookies-DSC_5105-1600.jpg" alt=""/></div>
+      <div class="aspect-square rounded-lg overflow-hidden group reveal" style="transition-delay:0.15s"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCThA5RQ1p2yklqzM082Ul-rlTitis404YB9QEBrS9fvybTb9kDo_GNDFZIpMZnE8RnwdO6hz-X-7lrYf6622hfCg06l26JIsEqpwQT0yAWYexFw1hfJ6mSBwByfcGyGC46jA5A9AwHOjFYwy9AinKthZ0JZRQn1hX4Y0KVPTLSPlx5UO97VkdxfR1dLodEFLp3c-G3iyCaDYKD3oCP97S0nN1_pUfgT7ez-FhxV_zQRXT6Ky7BzAQxySiE1mMigr-nhu0Axj9k_FE" alt=""/></div>
+      <div class="aspect-square rounded-lg overflow-hidden group reveal" style="transition-delay:0.2s"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://www.recipesquickie.com/wp-content/uploads/2025/03/Raspberry-Cheesecake-Brownies.jpg" alt=""/></div>
+      <div class="aspect-square rounded-lg overflow-hidden group reveal" style="transition-delay:0.25s"><img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://i.pinimg.com/736x/ce/93/33/ce9333adf00dbc30330c8ec585aa1360.jpg" alt=""/></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="w-full rounded-t-[2rem] bg-[#eeeee9] mt-20">
+  <div class="flex flex-col md:flex-row justify-between items-center w-full px-12 py-16 gap-8 max-w-7xl mx-auto">
+    <div class="text-left space-y-4">
+      <div class="font-['Noto_Serif'] text-xl font-bold text-[#361f1a]">BITEZ</div>
+      <p class="max-w-xs font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442]">Baking the world a sweeter place, one small batch at a time.</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-8">
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Shipping &amp; Returns</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Wholesale</a>
+      <a class="font-['Plus_Jakarta_Sans'] text-sm tracking-wide text-[#504442] hover:text-[#361f1a] underline decoration-2 underline-offset-4 opacity-80 hover:opacity-100 transition-opacity" href="#">Contact Us</a>
+    </div>
+    <div class="flex gap-6">
+      <a class="text-primary opacity-80 hover:opacity-100 transition-opacity" href="#">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="w-full text-center py-6 border-t border-outline-variant/10">
+    <p class="font-['Plus_Jakarta_Sans'] text-xs text-[#504442] opacity-60">© 2024 BITEZ Artisanal Confections.</p>
+  </div>
+</footer>
+
+<script>
+// ── CART STATE ─────────────────────────────────────────────
+let cart = JSON.parse(localStorage.getItem('crumb-cart') || '[]');
+
+function saveCart() { localStorage.setItem('crumb-cart', JSON.stringify(cart)); }
+
+function updateCartBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = total;
+  total > 0 ? badge.classList.replace('hidden','flex') : badge.classList.replace('flex','hidden');
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items');
+  const empty = document.getElementById('cart-empty');
+  const totalEl = document.getElementById('cart-total');
+  // clear existing items (keep empty msg)
+  Array.from(container.children).forEach(c => { if (c.id !== 'cart-empty') c.remove(); });
+
+  if (cart.length === 0) {
+    empty.style.display = 'flex';
+    totalEl.textContent = '$0.00';
+    return;
+  }
+  empty.style.display = 'none';
+  let total = 0;
+  cart.forEach((item, idx) => {
+    total += item.price * item.qty;
+    const el = document.createElement('div');
+    el.className = 'flex items-center justify-between gap-3 bg-surface-container rounded-lg p-4';
+    el.innerHTML = `
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-primary text-sm truncate">${item.name}</p>
+        <p class="text-xs text-on-surface-variant">$${item.price.toFixed(2)} each</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="changeQty(${idx},-1)" class="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest transition-colors text-primary font-bold text-lg flex items-center justify-center leading-none">−</button>
+        <span class="w-5 text-center font-bold text-primary text-sm">${item.qty}</span>
+        <button onclick="changeQty(${idx},1)" class="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest transition-colors text-primary font-bold text-lg flex items-center justify-center leading-none">+</button>
+      </div>
+      <span class="font-bold text-primary text-sm w-14 text-right">$${(item.price*item.qty).toFixed(2)}</span>
+    `;
+    container.appendChild(el);
+  });
+  totalEl.textContent = '$' + total.toFixed(2);
+}
+
+function addToCart(name, price) {
+  const existing = cart.find(i => i.name === name);
+  if (existing) existing.qty++;
+  else cart.push({ name, price, qty: 1 });
+  saveCart(); updateCartBadge(); renderCart();
+  showToast(`${name} added!`);
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  saveCart(); updateCartBadge(); renderCart();
+}
+
+// ── CART DRAWER ────────────────────────────────────────────
+function openCart() {
+  renderCart();
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function checkout() {
+  showToast('Order placed! 🎉');
+  cart = []; saveCart(); updateCartBadge(); renderCart();
+  closeCart();
+}
+
+// ── NAV: smooth scroll ─────────────────────────────────────
+function smoothTo(e, selector) {
+  e.preventDefault();
+  const el = document.querySelector(selector);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── NAV: scroll shadow ─────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ── MOBILE MENU ────────────────────────────────────────────
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// ── CAROUSEL ──────────────────────────────────────────────
+function scrollCarousel(dir) {
+  const c = document.getElementById('carousel');
+  c.scrollBy({ left: dir * 340, behavior: 'smooth' });
+}
+
+// ── SCROLL REVEAL ──────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── INIT ───────────────────────────────────────────────────
+updateCartBadge();
+</script>
+</body>
+</html>
